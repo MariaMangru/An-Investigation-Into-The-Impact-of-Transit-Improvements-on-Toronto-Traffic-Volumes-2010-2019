@@ -56,7 +56,7 @@ simulate_traffic_volumes <- function(n = 1000) {
     wx_other = sample(0:10, n, replace = TRUE)
   )
   
-  ## Create time intervals ##
+  ## Create time intervals
   data <- data %>%
     mutate(time_start = as.POSIXct(time_start, format="%H:%M:%S", tz="UTC"),
            time_end = time_start + minutes(15)) %>%
