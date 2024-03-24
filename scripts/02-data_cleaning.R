@@ -14,8 +14,6 @@ library(dplyr)
 # access raw data 
 data <- read.csv("./data/raw_data/raw-data-2010-2019.csv")
 
-colnames(raw_data_2010_2019)
-
 # Removing less relevant columns to focus on total traffic volumes, buses, pedestrians, and cyclists
 data_simplified <- data[, c("count_id", "count_date", "location_id", "location", 
                             "sb_cars_t", "nb_cars_t", "wb_cars_t", "eb_cars_t",
