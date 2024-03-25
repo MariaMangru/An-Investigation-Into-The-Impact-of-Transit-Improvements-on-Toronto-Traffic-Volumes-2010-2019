@@ -14,6 +14,8 @@ library(readr)
 
 #### Download data ####
 
+## FIX THIS - THE DATA DOES NOT DOWNLOAD PROPERLY 
+
 # get package
 package <- show_package("traffic-volumes-at-intersections-for-all-modes")
 package
@@ -25,11 +27,17 @@ resources <- list_package_resources("traffic-volumes-at-intersections-for-all-mo
 datastore_resources <- filter(resources, tolower(format) %in% c('csv', 'geojson'))
 
 # load the first datastore resource as a sample
-data <- filter(datastore_resources, row_number()==7) %>% get_resource()
+data <- filter(datastore_resources, row_number()==1) %>% get_resource()
+
 data
 
 
 #### Save data ####
-write_csv(data, "data/raw_data/raw-data-2010-2019.csv") 
+write_csv(data, "data/raw_data/raw-data-fix.csv") 
 
-         
+
+
+
+
+
+

@@ -65,8 +65,6 @@ View(summary_stats)
 
 ## VISUALIZE DATA ##
 
-# IMPORTANT: There are multiple errors that occur here which needs to be fixed
-
 ## Car 
 # Aggregate total car traffic in each direction by date and generate plot
 line_graph_car <- cleaned_data %>%

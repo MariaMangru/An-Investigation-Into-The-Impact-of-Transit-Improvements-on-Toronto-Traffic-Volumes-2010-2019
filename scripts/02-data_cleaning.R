@@ -21,8 +21,8 @@ data_simplified <- data[, c("count_id", "count_date", "location_id", "location",
                             "nx_peds", "sx_peds", "ex_peds", "wx_peds", 
                             "nx_bike", "sx_bike", "ex_bike", "wx_bike")]
 
-# Correct data format 
-data_simplified$count_date <- as.Date(data_simplified$count_date, format = "%m/%d/%Y")
+# Correct data format
+# data_simplified$count_date <- as.Date(data_simplified$count_date, format = "%m/%d/%Y")
 
 # Aggregating data to daily traffic volumes 
 daily_traffic_modes <- data_simplified %>%
