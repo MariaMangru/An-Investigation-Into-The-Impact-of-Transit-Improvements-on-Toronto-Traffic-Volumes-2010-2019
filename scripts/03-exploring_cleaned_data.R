@@ -11,11 +11,12 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(readr)
+library(here)
 
 #### Creating Summary Statistics and Visualizations ####
 
 # Load the cleaned data
-cleaned_data <- read_csv("./data/analysis_data/cleaned-data-2010-2019.csv")
+cleaned_data <- read_csv(here("data", "analysis_data", "cleaned-data-2010-2019.csv"))
 
 ## Summary Statistics ###
 
@@ -78,7 +79,6 @@ line_graph_car <- cleaned_data %>%
   pivot_longer(cols = starts_with("total_"), names_to = "direction", values_to = "total_cars") %>%
   ggplot(aes(x = count_date, y = total_cars)) +
   geom_smooth(aes(color = direction), se = FALSE) +  
-  facet_wrap(~direction, scales = "free_y") +        
   labs(title = "Daily Cars Traffic Over Time by Direction",
        x = "Date",
        y = "Total Cars Traffic") +
@@ -157,3 +157,4 @@ line_graph_cyclists
 
 # Save plot 
 ggsave("./other/outputs/cyclist_traffic_over_time.png", plot = line_graph_cyclists, width = 12, height = 6, units = "in")
+
