@@ -1,16 +1,14 @@
 #### Preamble ####
-# Purpose: Models... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Creates negative binomial model 
+# Author: Maria Mangru
+# Date: March 2024
+# Contact:maria.mangru@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
-
 
 #### Workspace setup ####
 library(tidyverse)
 library(rstanarm)
+
 
 #### Read data ####
 analysis_data <- read_csv("data/analysis_data/cleaned-data-2010-2019.csv")
