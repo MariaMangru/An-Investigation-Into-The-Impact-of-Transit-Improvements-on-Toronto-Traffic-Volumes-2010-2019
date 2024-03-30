@@ -23,14 +23,14 @@ cleaned_data <- read_csv(here("data", "analysis_data", "cleaned-data-2010-2019.c
 # Generate summary statistics 
 summary_stats <- cleaned_data %>%
   summarise(
-    mean_daily_sb_cars_t = mean(daily_sb_cars_t, na.rm = TRUE),
-    median_daily_sb_cars_t = median(daily_sb_cars_t, na.rm = TRUE),
-    mean_daily_nb_cars_t = mean(daily_nb_cars_t, na.rm = TRUE),
-    median_daily_nb_cars_t = median(daily_nb_cars_t, na.rm = TRUE),
-    mean_daily_wb_cars_t = mean(daily_wb_cars_t, na.rm = TRUE),
-    median_daily_wb_cars_t = median(daily_wb_cars_t, na.rm = TRUE),
-    mean_daily_eb_cars_t = mean(daily_eb_cars_t, na.rm = TRUE),
-    median_daily_eb_cars_t = median(daily_eb_cars_t, na.rm = TRUE),
+    mean_daily_sb_cars = mean(daily_sb_cars, na.rm = TRUE),
+    median_daily_sb_cars = median(daily_sb_cars, na.rm = TRUE),
+    mean_daily_nb_cars = mean(daily_nb_cars, na.rm = TRUE),
+    median_daily_nb_cars = median(daily_nb_cars, na.rm = TRUE),
+    mean_daily_wb_cars = mean(daily_wb_cars, na.rm = TRUE),
+    median_daily_wb_cars = median(daily_wb_cars, na.rm = TRUE),
+    mean_daily_eb_cars = mean(daily_eb_cars, na.rm = TRUE),
+    median_daily_eb_cars = median(daily_eb_cars, na.rm = TRUE),
     # Buses
     mean_daily_sb_bus = mean(daily_sb_bus, na.rm = TRUE),
     median_daily_sb_bus = median(daily_sb_bus, na.rm = TRUE),
@@ -71,10 +71,10 @@ View(summary_stats)
 line_graph_car <- cleaned_data %>%
   group_by(count_date) %>%
   summarise(
-    total_sb_cars_t = sum(daily_sb_cars_t, na.rm = TRUE),
-    total_nb_cars_t = sum(daily_nb_cars_t, na.rm = TRUE),
-    total_eb_cars_t = sum(daily_eb_cars_t, na.rm = TRUE),
-    total_wb_cars_t = sum(daily_wb_cars_t, na.rm = TRUE)
+    total_sb_cars = sum(daily_sb_cars, na.rm = TRUE),
+    total_nb_cars = sum(daily_nb_cars, na.rm = TRUE),
+    total_eb_cars = sum(daily_eb_cars, na.rm = TRUE),
+    total_wb_cars = sum(daily_wb_cars, na.rm = TRUE)
   ) %>%
   pivot_longer(cols = starts_with("total_"), names_to = "direction", values_to = "total_cars") %>%
   ggplot(aes(x = count_date, y = total_cars)) +
@@ -158,3 +158,4 @@ line_graph_cyclists
 # Save plot 
 ggsave("./other/outputs/cyclist_traffic_over_time.png", plot = line_graph_cyclists, width = 12, height = 6, units = "in")
 
+colnames(cleaned_data_2010_2019)
