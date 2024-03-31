@@ -9,72 +9,68 @@
 library(MASS) 
 library(dplyr)
 library(readr)
+library(car)
 
 
-## NEEDS A LOT OF WORK
+# Read and prepare data
+analysis_data <- read.csv(here("data", "analysis_data", "cleaned-data-2010-2019.csv"))
 
-#### Read data ####
-analysis_data <- read_csv("data/analysis_data/cleaned-data-2010-2019.csv")
+# Scaling predictor variables for analysis
+analysis_data <- analysis_data %>%
+  mutate(
+    daily_bus = scale(daily_bus),
+    daily_peds = scale(daily_peds),
+    daily_bike = scale(daily_bike)
+  )
 
-## Scale the predictor variables ## 
-analysis_data$daily_bus <- scale(analysis_data$daily_bus)
-analysis_data$daily_peds <- scale(analysis_data$daily_peds)
-analysis_data$daily_bike <- scale(analysis_data$daily_bike)
 
-
+# Splitting the dataset into before and after a specific date for comparison
 before_improvement <- subset(analysis_data, count_date < as.Date("2017-12-17"))
 after_improvement <- subset(analysis_data, count_date >= as.Date("2017-12-17"))
 
 
-# Check the number of observations in each subset to ensure they contain data.
+# Verifying the data split
 cat("Observations before improvement:", nrow(before_improvement), "\n")
 cat("Observations after improvement:", nrow(after_improvement), "\n")
 
+
 ### Model data ####
 
-
-model_before <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike, 
-                       data = before_improvement)
+# Building negative binomial regression models for before and after improvement
+model_before <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike, data = before_improvement)
 summary(model_before)
 
+model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike, data = after_improvement)
+summary(model_after)
 
-model_before <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike, 
-                       data = before_improvement)
-summary(model_before)
 
 #### Save model ####
-saveRDS(
-  model,
-  file = "model/model.rds"
-)
+models_dir <- here("models")
+saveRDS(model_before, file = file.path(models_dir, "model_before.rds"))
+saveRDS(model_after, file = file.path(models_dir, "model_after.rds"))
+
+
 
 ### Checks for Model ###
 
-library(car)
+# Checking for multicollinearity using VIF
 vif(model_before) 
 vif(model_after)
 
-
-# Plotting residuals to check for patterns
+# Visualizing residuals to identify patterns
 par(mfrow = c(2, 2))
 plot(residuals(model_before), type = "p", main = "Residuals of Model Before Improvement")
 plot(residuals(model_after), type = "p", main = "Residuals of Model After Improvement")
 
-
-# Checking for normality of residuals
+# Examining the normality of residuals
 hist(resid(model_before), main = "Histogram of Residuals - Before")
 hist(resid(model_after), main = "Histogram of Residuals - After")
 
-
-# Checking for influential observations using Cook's distance
-cooks.distance(model_before) # For the 'before improvement' model
-cooks.distance(model_after)  # For the 'after improvement' model
+# Investigating influential observations with Cook's distance
+cooks.distance(model_before)
+cooks.distance(model_after)  
 
 # Plotting Cook's distance
 plot(cooks.distance(model_before), type = "h", main = "Cook's Distance - Before")
 plot(cooks.distance(model_after), type = "h", main = "Cook's Distance - After")
-
-
-
-
 
