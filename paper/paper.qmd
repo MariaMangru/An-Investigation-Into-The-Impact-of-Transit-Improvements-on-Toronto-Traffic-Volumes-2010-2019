@@ -6,7 +6,7 @@ author:
 thanks: "Code and data are available at: https://github.com/MariaMangru/An-Investigation-Into-The-Impact-of-Transit-Improvements-on-Toronto-Traffic-Volumes-2010-2019."
 date: today
 date-format: long
-abstract: "In this study, I have embarked on an analysis of a decade's worth of traffic volume data from critical intersections in Toronto, scrutinizing the effects of public transit developments on urban traffic congestion from 2010 to 2019. [INSERT FINDINGS HERE] The significance of this research lies in its potential to inform and shape urban infrastructure strategies, offering evidence on how transit policies can alleviate traffic pressures in metropolitian areas."
+abstract: "This study investigates the relationship between enhancements in public transit and traffic volumes in metropolitan cities. In particular, this study focuses on the effects caused by the Spadina Subway Extension in Toronto. Data from 2014 - 2019 reveals that both before and after the Subway Extension in 2017, an increase in bus and pedestrian traffic was also related to an increase in car traffic."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -155,13 +155,11 @@ In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. 
 
 In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows...
 
-
 ## Diagnostics
 
 @fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
 
 @fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
-
 
 \newpage
 

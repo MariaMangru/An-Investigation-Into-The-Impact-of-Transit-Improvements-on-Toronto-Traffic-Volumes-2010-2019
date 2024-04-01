@@ -13,7 +13,7 @@ library(car)
 
 
 # Read and prepare data
-analysis_data <- read.csv(here("data", "analysis_data", "cleaned-data-2010-2019.csv"))
+analysis_data <- read.csv(here("data", "analysis_data", "cleaned-data.csv"))
 
 # Scaling predictor variables for analysis
 analysis_data <- analysis_data %>%
@@ -25,8 +25,13 @@ analysis_data <- analysis_data %>%
 
 
 # Splitting the dataset into before and after a specific date for comparison
-before_improvement <- subset(analysis_data, count_date < as.Date("2017-12-17"))
-after_improvement <- subset(analysis_data, count_date >= as.Date("2017-12-17"))
+start_before <- as.Date("2011-12-31")
+end_before <- as.Date("2014-12-31")
+start_after <- as.Date("2018-11-01")
+end_after <- as.Date("2020-02-29")
+
+before_improvement <- subset(analysis_data, count_date >= start_before & count_date <= end_before)
+after_improvement <- subset(analysis_data, count_date >= start_after & count_date <= end_after)
 
 
 # Verifying the data split
@@ -37,10 +42,10 @@ cat("Observations after improvement:", nrow(after_improvement), "\n")
 ### Model data ####
 
 # Building negative binomial regression models for before and after improvement
-model_before <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike, data = before_improvement)
+model_before <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = before_improvement)
 summary(model_before)
 
-model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike, data = after_improvement)
+model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = after_improvement)
 summary(model_after)
 
 

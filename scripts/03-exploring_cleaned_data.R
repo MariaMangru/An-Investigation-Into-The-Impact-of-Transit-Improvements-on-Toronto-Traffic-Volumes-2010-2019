@@ -17,7 +17,7 @@ library(here)
 ### Creating Summary Statistics and Visualizations ###
 
 # Load the cleaned data
-cleaned_data <- read_csv(here("data", "analysis_data", "cleaned-data-2010-2019.csv"))
+cleaned_data <- read_csv(here("data", "analysis_data", "cleaned-data.csv"))
 
 # Summary Statistics
 
@@ -98,3 +98,23 @@ line_graph_cyclists
 
 # Save cyclist traffic plot
 ggsave("./other/outputs/cyclist_traffic_over_time.png", plot = line_graph_cyclists, width = 12, height = 6, units = "in")
+
+
+
+# Visualizing car traffic with respect to the time trend
+time_trend_graph_car <- cleaned_data %>%
+  ggplot(aes(x = time_trend, y = daily_cars)) +
+  geom_point(aes(color = daily_cars), alpha = 0.5) + 
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  
+  scale_color_gradient(low = "blue", high = "red") +
+  labs(title = "Car Traffic Volume Over Time Trend",
+       x = "Days Since Start",
+       y = "Daily Car Traffic",
+       color = "Daily Traffic") +
+  theme_minimal()
+
+# Display car traffic plot with time trend
+time_trend_graph_car
+
+# Save the car traffic plot with time trend
+ggsave(here("other", "outputs", "car_traffic_time_trend.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")

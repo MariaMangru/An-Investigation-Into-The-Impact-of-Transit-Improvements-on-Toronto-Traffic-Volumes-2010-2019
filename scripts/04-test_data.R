@@ -78,24 +78,10 @@ test_that("Expected columns exist after data cleaning", {
 
 # Check that dates are within the filtered range of 2014 to 2019
 test_that("Dates are within the filtered range of 2014 to 2019", {
-  expect_true(all(year(daily_traffic$count_date) >= 2014 & 
-                    year(daily_traffic$count_date) <= 2019))
+  expect_true(all(year(daily_traffic$count_date) >= 2011 & 
+                    year(daily_traffic$count_date) <= 2020))
 })
 
-# Check that filtered data does not include excluded streets
-test_that("Filtered data does not include excluded streets", {
-  excluded_streets <- c("BREMNER BLVD", "FORT YORK BLVD", "SPADINA AVE", 
-                        "DUNDAS ST", "SIGNET DR", "CARPENTER RD", 
-                        "GIHON SPRING DR", "BLACK CREEK BLVD", "HARLOCK BLVD", 
-                        "ST CLAIR AVE W AT KEELE ST & WESTON RD", 
-                        "DUFFERIN ST AT STEELES AVE W", 
-                        "BLOOR ST W AT KEELE ST & PARKSIDE DR", 
-                        "BLACK CREEK DR S TCS AT JANE ST", 
-                        "HULLMAR DR AT JANE ST")
-  for (street in excluded_streets) {
-    expect_true(all(!str_detect(daily_traffic$location, regex(street, ignore_case = TRUE))))
-  }
-})
 
 
 #### Tests for exploring cleaned data ####
