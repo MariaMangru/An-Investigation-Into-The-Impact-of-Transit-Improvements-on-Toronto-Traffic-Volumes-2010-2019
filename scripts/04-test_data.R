@@ -69,7 +69,8 @@ test_that("Cleaned data frame is not empty", {
 
 # Check for the existence of expected columns after cleaning
 test_that("Expected columns exist after data cleaning", {
-  expected_cols <- c("count_date", "location_id", "location", 
+  expected_cols <- c("count_date", "location", "lng", "lat", 
+                     "count_id", "time_trend", 
                      "daily_cars", "daily_bus", "daily_peds", "daily_bike")
   for (col in expected_cols) {
     expect_true(col %in% names(daily_traffic))

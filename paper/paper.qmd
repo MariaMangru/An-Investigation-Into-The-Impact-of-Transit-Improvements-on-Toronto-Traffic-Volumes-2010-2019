@@ -1,18 +1,18 @@
 ---
-title: "An Investigation Into The Impact of Transit Improvements on Toronto Traffic Volumes 2010 - 2019"
+title: "The Route 508 Streetcar and Congestion on Toronto's Shoreline, 2014 - 2020"
 subtitle: "My subtitle if needed"
 author: 
   - Maria Mangru
 thanks: "Code and data are available at: https://github.com/MariaMangru/An-Investigation-Into-The-Impact-of-Transit-Improvements-on-Toronto-Traffic-Volumes-2010-2019."
 date: today
 date-format: long
-abstract: "This study investigates the relationship between enhancements in public transit and traffic volumes in metropolitan cities. In particular, this study focuses on the effects caused by the Spadina Subway Extension in Toronto. Data from 2014 - 2019 reveals that both before and after the Subway Extension in 2017, an increase in bus and pedestrian traffic was also related to an increase in car traffic."
+abstract: "This study investigates the impact of enhanced public transit infrastucture on car congestion. It specifically focuses on the reintroduction of the Route 508 Lake Shore streetcar between 2014 and 2020. The data, sourced from the City of Toronto's Transportation Services Division, includes detailed traffic volumes for various modes at intersections across the city. The method of analysis includes comparing the negative binomial regression models of daily car traffic before and after transit upgrades. The results highlighted a significant reduction in the relationship between bus traffic and car congestion. Additionally, it was observed that car traffic decreased over time. These findings highlight the usefulness of public transit improvements in reducing urban congestion."
 format: pdf
 number-sections: true
 bibliography: references.bib
 ---
 
-```{r}
+```{r, echo=FALSE, message=FALSE}
 #| include: false
 #| warning: false
 #| message: false
@@ -22,48 +22,69 @@ library(ggplot2)
 library(tidyr)
 library(readr)
 library(here)
+library(knitr)
 ```
 
 # Introduction
 
-You can and should cross-reference sections and sub-sections. We use @citeR and @rohan.
+Traffic congestion represents a significant challenge for urban cities. It is a non-productive activity which negatively affects economic efficiency, environmental sustainability and overall quality of life. To address this challenge, many cities like Toronto have undergone improvements to public transit infrastructure with the aim of reducing car dependency and mitigate traffic congestion. However, it is still highly debatable whether or not such improvements lead to a decrease in car congestion.
 
-The remainder of this paper is structured as follows. @sec-data....
+This study specifically investigates the 508 Lake Shore Streetcar route in Toronto. It utilizes two datasets provided by the City of Toronto's Transportation Services Division. These datasets capture traffic volumes for various modes at city intersections. To analyze this data, @citeR was used along with several R packages. Through the use of a negative binomial regression, we can assess daily car traffic relative to bus traffic, pedestrian, bicycle flows and a time trend. Models were created to investigate traffic patterns before and after public transit improvements.
+
+The estimand of this study is quantitatively evaluated through the change in the relationship between daily bus traffic and daily car traffic, as well as the evolution of car traffic trends over time. The findings from this study indicates a significant reduction in the relationship between bus traffic and car congestion, following the transit improvements. Additionally, a reversal from an increasing to a decreasing trend in car traffic over time was noted.
+
+This research begins with an in-depth exploration of the dataset and the analytical methods employed, highlighting the use of @citeR for data analysis. It then goes on to explain the results of the regression model, comparing and contrasting traffic patterns prior to and following the installation of transportation upgrades. The discussion interprets these findings within the broader framework of managing urban congestion and the importance of public transit. Through this approach, I hope to illustrate the important role of public transit improvements in combating urban congestion, as well as its significance for promoting sustainable urban mobility and imporving the standard of living in urban areas.
 
 # Data {#sec-data}
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+## Data Source
 
-```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
+This research relies on traffic volume data sets from the City of Toronto's Transportation Services Division. It accessible through the Toronto OpenData portal and is titled "Traffic Volumes at Intersections for All Modes" which is free and accessible for public use. The information collected in the dataset are of two main types:
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
+1.  Automatic Traffic Recorder Counts (ATR): These are segment-level volumes which capture the total number of vehicles, cyclists, or pedestrians moving in a specific direction on a street.
+
+2.  Turning Movement Counts (TMCs): These detail the volume observed at each leg of an intersection, including the turning movement by mode (car, truck, bus, pedestrian, cyclist, other).
+
+The data set covers various intersections across Toronto, providing a detailed view of the city's traffic dynamics. It includes data spanning 2010-2019 and 2020-2024 which was combined into one data set. The data set is segmented by direction of approach, turning movement, and mode, in 15-minute intervals. This level of detail allows for a thorough investigation of traffic patterns, which is especially important for analyzing how changes to public transport affect traffic congestion on the 508 Lake Shore route.
+
+## Variables of Interst
+
+In addition to a temporal trend variables, specific variables were chosen for this analysis, with an emphasis on the dynamics of car traffic in relation to bus, pedestrian, anc bicycle traffic volumes:
+
+-   Daily Car Traffic (`daily_cars`): Total volume of car traffic recorded at selected intersections along the 508 Route.
+-   Daily Bus Traffic (`daily_bus`), Pedestrian Traffic (`daily_peds`) and Bicycle Traffic (`daily_bike`): Bus, pedestrian and bike traffic volumes used to indicate the presence and frequency of non personal car usage.
+-   Time Trend (time_trend): A constructed variable to analyze traffic pattern changes over time.
+
+Using @citeR, the dataset was processed by using tools like `ggplot2` for visualization, `dplyr` for data manipulation, and `lubridate` for date management. These packages made it easier to clean, aggregate, and analyze traffic volumes, which helped to provide a more complex picture of traffic patterns and flow.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Load the cleaned data
+cleaned_data <- read_csv(here("data", "analysis_data", "cleaned-data.csv"))
+
+# Generate and view summary statistics for traffic data
+summary_stats <- cleaned_data %>%
+  summarise(
+    mean_daily_cars = mean(daily_cars, na.rm = TRUE),
+    median_daily_cars = median(daily_cars, na.rm = TRUE),
+    mean_daily_bus = mean(daily_bus, na.rm = TRUE),
+    median_daily_bus = median(daily_bus, na.rm = TRUE),
+    mean_daily_peds = mean(daily_peds, na.rm = TRUE),
+    median_daily_peds = median(daily_peds, na.rm = TRUE),
+    mean_daily_bike = mean(daily_bike, na.rm = TRUE),
+    median_daily_bike = median(daily_bike, na.rm = TRUE)
+  )
+
+# Display the summary statistics using knitr::kable for better formatting
+knitr::kable(summary_stats, format = "html", caption = "Summary Statistics for Daily Traffic")
+
+
 ```
 
-Talk more about it.
+## Data Cleaning and Preparation
 
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
+The data set was cleaned and prepared, with yearly data files combined, relevant date periods filtered, and traffic volumes aggregated to get daily totals for every mode of transportation. This preprocessing step made sure the data was suitable for analysis, with a particular emphasis on the time frame prior to and following the 508 Lake Shore route's streetcar upgrades.
 
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
-#| echo: false
-#| warning: false
-#| message: false
-
-analysis_data <- read_csv(here::here("data/analysis_data/cleaned-data-2010-2019.csv"))
-
-```
-
-Talk way more about it.
+## Summary Statistics and Graphical Analysis
 
 # Model
 
@@ -94,36 +115,6 @@ We expect a positive relationship between the size of the wings and time spent a
 We can use maths by including latex between dollar signs, for instance $\theta$.
 
 # Results
-
-Our results are summarized in @tbl-modelresults.
-
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-
-library(rstanarm)
-
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
-```
-
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
-
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
-```
 
 # Discussion
 
