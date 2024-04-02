@@ -24,15 +24,30 @@ cleaned_data <- read_csv(here("data", "analysis_data", "cleaned-data.csv"))
 # Generate and view summary statistics for traffic data
 summary_stats <- cleaned_data %>%
   summarise(
-    mean_daily_cars = mean(daily_cars, na.rm = TRUE),
-    median_daily_cars = median(daily_cars, na.rm = TRUE),
-    mean_daily_bus = mean(daily_bus, na.rm = TRUE),
-    median_daily_bus = median(daily_bus, na.rm = TRUE),
-    mean_daily_peds = mean(daily_peds, na.rm = TRUE),
-    median_daily_peds = median(daily_peds, na.rm = TRUE),
-    mean_daily_bike = mean(daily_bike, na.rm = TRUE),
-    median_daily_bike = median(daily_bike, na.rm = TRUE)
-  )
+    Mean_Cars = mean(daily_cars, na.rm = TRUE),
+    Median_Cars = median(daily_cars, na.rm = TRUE),
+    Mean_Buses = mean(daily_bus, na.rm = TRUE),
+    Median_Buses = median(daily_bus, na.rm = TRUE),
+    Mean_Pedestrians = mean(daily_peds, na.rm = TRUE),
+    Median_Pedestrians = median(daily_peds, na.rm = TRUE),
+    Mean_Bicycles = mean(daily_bike, na.rm = TRUE),
+    Median_Bicycles = median(daily_bike, na.rm = TRUE)
+  ) %>% 
+  pivot_longer(
+    cols = everything(),
+    names_to = "Category",
+    values_to = "Value"
+  ) %>%
+  separate(Category, into = c("Statistic", "Mode"), sep = "_") %>%
+  pivot_wider(
+    names_from = Statistic,
+    values_from = Value
+  ) %>%
+  mutate(Mode = str_replace(Mode, "Cars", "Daily Cars"),
+         Mode = str_replace(Mode, "Buses", "Daily Buses"),
+         Mode = str_replace(Mode, "Pedestrians", "Daily Pedestrians"),
+         Mode = str_replace(Mode, "Bicycles", "Daily Bicycles")) %>%
+  select(`Transport Mode` = Mode, Mean, Median)
 
 # Display the summary statistics
 View(summary_stats)
@@ -118,3 +133,9 @@ time_trend_graph_car
 
 # Save the car traffic plot with time trend
 ggsave(here("other", "outputs", "car_traffic_time_trend.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")
+
+
+
+
+
+
