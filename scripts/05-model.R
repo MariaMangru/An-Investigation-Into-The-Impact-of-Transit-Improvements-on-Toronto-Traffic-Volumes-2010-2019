@@ -49,6 +49,38 @@ model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_tr
 summary(model_after)
 
 
+# Graphical representation of the model results for the 'before' improvement model
+before_plot <- ggplot(before_improvement, aes(x = time_trend, y = daily_cars)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "glm.nb", formula = y ~ x, se = FALSE) + 
+  labs(title = "Relationship Between Traffic and Time Before Improvements",
+       x = "Time Trend",
+       y = "Scaled Count of Cars") +
+  theme_minimal()
+
+# Display plot
+before_plot
+
+# Save the plot
+ggsave(here("other", "outputs", "before_plot.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")
+
+
+# Graphical representation of the model results for the 'after' improvement model
+after_plot <- ggplot(after_improvement, aes(x = time_trend, y = daily_cars)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "glm.nb", formula = y ~ x, se = FALSE) +
+  labs(title = "Relationship Between Traffic and Time After Improvements",
+       x = "Time Trend",
+       y = "Scaled Count of Cars") +
+  theme_minimal()
+
+# Display plot
+after_plot
+
+# Save the plot
+ggsave(here("other", "outputs", "after_plot.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")
+
+
 #### Save model ####
 models_dir <- here("models")
 saveRDS(model_before, file = file.path(models_dir, "model_before.rds"))

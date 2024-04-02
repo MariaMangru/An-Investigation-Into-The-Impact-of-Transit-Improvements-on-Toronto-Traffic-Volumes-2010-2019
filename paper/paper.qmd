@@ -1,5 +1,5 @@
 ---
-title: "The Route 508 Streetcar and Congestion on Toronto's Shoreline, 2014 - 2020"
+title: "The Route 508 Streetcar and Congestion on Toronto's Shoreline, 2011 - 2020"
 subtitle: "Examining Traffic Patterns Before and After Public Transit Improvements"
 author: 
   - Maria Mangru
@@ -24,6 +24,10 @@ library(readr)
 library(here)
 library(knitr)
 library(stringr)
+library(broom)
+library(kableExtra)
+library(MASS) 
+library(car)
 ```
 
 # Introduction
@@ -65,45 +69,34 @@ Using @citeR, the dataset was processed by using tools like `ggplot2` for visual
 cleaned_data <- read_csv(here("data", "analysis_data", "cleaned-data.csv"))
 
 # Generate summary statistics for traffic data
-summary_stats <- cleaned_data %>%
-  summarise(
-    Mean_Cars = mean(daily_cars, na.rm = TRUE),
-    Median_Cars = median(daily_cars, na.rm = TRUE),
-    Mean_Buses = mean(daily_bus, na.rm = TRUE),
-    Median_Buses = median(daily_bus, na.rm = TRUE),
-    Mean_Pedestrians = mean(daily_peds, na.rm = TRUE),
-    Median_Pedestrians = median(daily_peds, na.rm = TRUE),
-    Mean_Bicycles = mean(daily_bike, na.rm = TRUE),
-    Median_Bicycles = median(daily_bike, na.rm = TRUE)
-  ) %>% 
-  pivot_longer(
-    cols = everything(),
-    names_to = "Category",
-    values_to = "Value"
-  ) %>%
-  separate(Category, into = c("Statistic", "Mode"), sep = "_") %>%
-  pivot_wider(
-    names_from = Statistic,
-    values_from = Value
-  ) %>%
-  mutate(Mode = str_replace(Mode, "Cars", "Daily Car Traffic"),
-         Mode = str_replace(Mode, "Buses", "Daily Bus Traffic"),
-         Mode = str_replace(Mode, "Pedestrians", "Daily Pedestrian Traffic"),
-         Mode = str_replace(Mode, "Bicycles", "Daily Bicycle Traffic")) %>%
-  select(`Transport Mode` = Mode, Mean, Median)
+summary_stats <- summarise(cleaned_data,
+  Mean_Cars = mean(daily_cars, na.rm = TRUE),
+  Median_Cars = median(daily_cars, na.rm = TRUE),
+  Mean_Buses = mean(daily_bus, na.rm = TRUE),
+  Median_Buses = median(daily_bus, na.rm = TRUE),
+  Mean_Pedestrians = mean(daily_peds, na.rm = TRUE),
+  Median_Pedestrians = median(daily_peds, na.rm = TRUE),
+  Mean_Bicycles = mean(daily_bike, na.rm = TRUE),
+  Median_Bicycles = median(daily_bike, na.rm = TRUE)
+)
+
+# Create a data frame for the kable function
+summary_stats_df <- data.frame(
+  Transport_Mode = c("Daily Car Traffic", "Daily Bus Traffic", "Daily Pedestrian Traffic", "Daily Bicycle Traffic"),
+  Mean = c(summary_stats$Mean_Cars, summary_stats$Mean_Buses, summary_stats$Mean_Pedestrians, summary_stats$Mean_Bicycles),
+  Median = c(summary_stats$Median_Cars, summary_stats$Median_Buses, summary_stats$Median_Pedestrians, summary_stats$Median_Bicycles)
+)
 
 # Display summary statistics
-knitr::kable(summary_stats, format = "html", 
-             col.names = c("Transport Mode", "Mean", "Median"),
-             caption = "Summary statistics table for daily traffic volume",
-             table.attr = 'style="width:100%;"') 
-
+kable(summary_stats_df, format = "html", 
+      col.names = c("Transport Mode", "Mean", "Median"),
+      caption = "Summary statistics table for daily traffic volume",
+      table.attr = 'style="width:100%;"') 
 ```
 
-The summary table above provides a quantitative comparison across transportation modes by condensing the traffic data for each mode into average and median statistics. The data reveals that car traffic surpasses other modes in volume, with the mean and median values for daily car traffic being the highest. 
+The summary table above provides a quantitative comparison across transportation modes by condensing the traffic data for each mode into average and median statistics. The data reveals that car traffic surpasses other modes in volume, with the mean and median values for daily car traffic being the highest.
 
-
-```{r line-graph-cars, fig.cap="Daily Car Traffic Over Time. This graph displays the trend in number of cars within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.", fig.width=10, fig.height=6, echo=FALSE, message=FALSE, warning=FALSE}
+```{r line-graph-cars, fig.cap="Daily Car Traffic Over Time. This graph displays the trend in number of cars within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.",fig.width=8, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE}
 
 # Visualizing daily car traffic over time
 line_graph_car <- cleaned_data %>%
@@ -121,8 +114,7 @@ line_graph_car
 
 The daily variation in car traffic from 2011 to 2020 is shown in Figure 1. The traffic volume is depicted on a smooth line graph that first increases and peaks about 2016, after which it sharply declines. The fall that follows may point to the benefits of the Route 508 Lake Shore streetcar improvements on easing traffic congestion. The peak denotes a period of increased traffic.
 
-
-```{r line-graph-bus, fig.cap="Daily Bus Traffic Over Time. This graph displays the trend in number of buses within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.", fig.width=10, fig.height=6, echo=FALSE, message=FALSE, warning=FALSE}
+```{r line-graph-bus, fig.cap="Daily Bus Traffic Over Time. This graph displays the trend in number of buses within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.", fig.width=8, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE}
 
 # Visualizing daily bus traffic over time
 line_graph_buses <- cleaned_data %>%
@@ -140,8 +132,7 @@ line_graph_buses
 
 Figure 2 depicts the daily patterns in bus traffic, which follow a similar pattern to that of car traffic. It is a smooth line graph that rises to a high around in 2016, then declines. This pattern might be an indication of how bus utilization has changed, which could be related to the streetcar route's service modifications and other improvements to public transportation.
 
-
-```{r line-graph-pedestrian, fig.cap="Daily Pedestrian Traffic Over Time. This graph displays the trend in number of pedestrian within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.", fig.width=10, fig.height=6, echo=FALSE, message=FALSE, warning=FALSE}
+```{r line-graph-pedestrian, fig.cap="Daily Pedestrian Traffic Over Time. This graph displays the trend in number of pedestrian within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.", fig.width=8, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE}
 
 # Visualizing daily pedestrian traffic over time
 line_graph_pedestrians <- cleaned_data %>%
@@ -159,8 +150,7 @@ line_graph_pedestrians
 
 Variations in pedestrian traffic over is shown in Figure 3's line graph. The middle of the time period has a noteworthy decrease, which is followed by a rise and another decline. This could be attributed to a number of things, such as changes in walkability, urban development, and perhaps the availability of better public transportation alternatives that encourage walking as a mode of transportation.
 
-
-```{r line-graph-bike, fig.cap="Daily Bike Traffic Over Time. This graph displays the trend in number of bikes within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.", fig.width=10, fig.height=6, echo=FALSE, message=FALSE, warning=FALSE}
+```{r line-graph-bike, fig.cap="Daily Bike Traffic Over Time. This graph displays the trend in number of bikes within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.", fig.width=8, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE}
 
 # Visualizing daily bike traffic over time
 line_graph_cyclists <- cleaned_data %>%
@@ -178,8 +168,7 @@ line_graph_cyclists
 
 The pattern of bicycle traffic over time is depicted in Figure 4, where a notable rise and fall are shown on the line graph, indicating huge variations. The variations may be attributed to changing public opinions on riding, the implementation of bike infrastructure, or seasonal variations in weather patterns, which may be exacerbated by changes made to the transit system.
 
-
-```{r line-graph-time-trend, fig.cap="Daily Car Traffic Over Time. This graph displays the general trend in number of cars from the beginning of data collection period.", fig.width=10, fig.height=6, echo=FALSE, message=FALSE, warning=FALSE}
+```{r line-graph-time-trend, fig.cap="Daily Car Traffic Over Time. This graph displays the general trend in number of cars from the beginning of data collection period.", fig.width=8, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE}
 
 # Visualizing car traffic with respect to the time trend
 time_trend_graph_car <- cleaned_data %>%
@@ -197,34 +186,88 @@ time_trend_graph_car <- cleaned_data %>%
 time_trend_graph_car
 
 ```
-The scatter plot illustrates the fluctuating daily car counts over time, with a trend line suggesting an initial increase in traffic followed by a decline.
 
+The scatter plot illustrates the fluctuating daily car counts over time, with a trend line suggesting an initial increase in traffic followed by a decline.
 
 # Model
 
+This study uses negative binomial regression to address the problem of overdispersion, which occurs when observed variance is greater than the mean and is frequently seen in count data. The dependent variable in the model is the daily count of cars, which is assumed to be impacted by temporal variations and the counts of alternative transportation modes (such as buses, bicycles, and pedestrians).
 
-
-## Model set-up
-
-
+As such, we estimate the following model:
 
 ```{=tex}
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
+\begin{align*} 
+\log(\text{Count\_Cars}) &= \beta_0 + \beta_1 \times \text{Bus} + \beta_2 \times \text{Pedestrians} + \beta_3 \times \text{Bike} + \text{time\_trend} \\
+\text{where} & \\
+\log(\text{Count\_Cars}) & \text{ is the natural logarithm of the count of cars,} \\
+\beta_0 & \text{ is the intercept of the model,} \\
+\beta_1, \beta_2, \beta_3 & \text{ are the coefficients for the counts of buses, pedestrians, and bicycles,} \\
+\text{time\_trend} & \text{ is the variable capturing the longitudinal changes.}
+\end{align*}
 ```
 
 
-### Model justification
 
+## Model justification
+
+There are two reasons for using negative binomial regression. First, since events tend to cluster together in both place and time, traffic count data usually show overdispersion. For such data, the negative binomial model makes sense since it allows the variance to surpass the mean. Second, given that traffic counts frequently deviate from a normal distribution, this model can account for their skewed nature.
+
+The analysis is divided into two temporal models in order to evaluate the effects of the Route 508 Lake Shore streetcar service upgrades: `model_before`, which is the model before the improvements, and `model_after`, which is the model after the improvements. This method clarifies the relationship that existed before and after the policy intervention between the independent and dependent variables.
+
+Together with a temporal trend, the `model_before` captures the baseline relationship between automobile traffic and other modes of transportation. As an illustration of possible changes in traffic patterns brought about by the improved streetcar service, the `model_after`, on the other hand, depicts the altered dynamics following the enhancement. By use of comparative analysis, these models demonstrate the effectiveness of the Route 508 enhancements in mitigating car congestion.
 
 
 # Results
+
+```{r mdoel summaries, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+# Read and prepare data
+analysis_data <- read.csv(here("data", "analysis_data", "cleaned-data.csv"))
+analysis_data$count_date <- as.Date(analysis_data$count_date)
+
+# Scaling predictor variables for analysis
+analysis_data <- analysis_data %>%
+  mutate(
+    daily_bus = scale(daily_bus, center = TRUE, scale = TRUE),
+    daily_peds = scale(daily_peds, center = TRUE, scale = TRUE),
+    daily_bike = scale(daily_bike, center = TRUE, scale = TRUE)
+  )
+
+# Splitting the dataset into before and after a specific date for comparison
+start_before <- as.Date("2011-12-31")
+end_before <- as.Date("2014-12-31")
+start_after <- as.Date("2018-11-01")
+end_after <- as.Date("2020-02-29")
+
+before_improvement <- subset(analysis_data, count_date >= start_before & count_date <= end_before)
+after_improvement <- subset(analysis_data, count_date >= start_after & count_date <= end_after)
+
+### Model data ####
+
+analysis_data <- analysis_data %>%
+  mutate(time_trend = as.numeric(count_date - min(count_date, na.rm = TRUE)))
+
+before_improvement <- subset(analysis_data, count_date >= start_before & count_date <= end_before)
+after_improvement <- subset(analysis_data, count_date >= start_after & count_date <= end_after)
+
+# Building negative binomial regression models for before and after improvement
+model_before <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = before_improvement)
+model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = after_improvement)
+
+# Tidying the model summaries 
+tidy_model_before <- tidy(model_before)
+tidy_model_after <- tidy(model_after)
+
+# Model before improvement
+kable(tidy_model_before, caption = "Negative Binomial Regression Model - Before Improvement") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+# Model after improvement
+kable(tidy_model_after, caption = "Negative Binomial Regression Model - After Improvement") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
 
 # Discussion
 
@@ -236,7 +279,6 @@ y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
 
 ## Weaknesses and next steps
 
-Weaknesses and next steps should also be included.
 
 \newpage
 
@@ -251,7 +293,6 @@ Weaknesses and next steps should also be included.
 ## Posterior predictive check
 
 ## Diagnostics
-
 
 \newpage
 

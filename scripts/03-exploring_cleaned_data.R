@@ -32,23 +32,7 @@ summary_stats <- cleaned_data %>%
     Median_Pedestrians = median(daily_peds, na.rm = TRUE),
     Mean_Bicycles = mean(daily_bike, na.rm = TRUE),
     Median_Bicycles = median(daily_bike, na.rm = TRUE)
-  ) %>% 
-  pivot_longer(
-    cols = everything(),
-    names_to = "Category",
-    values_to = "Value"
-  ) %>%
-  separate(Category, into = c("Statistic", "Mode"), sep = "_") %>%
-  pivot_wider(
-    names_from = Statistic,
-    values_from = Value
-  ) %>%
-  mutate(Mode = str_replace(Mode, "Cars", "Daily Cars"),
-         Mode = str_replace(Mode, "Buses", "Daily Buses"),
-         Mode = str_replace(Mode, "Pedestrians", "Daily Pedestrians"),
-         Mode = str_replace(Mode, "Bicycles", "Daily Bicycles")) %>%
-  select(`Transport Mode` = Mode, Mean, Median)
-
+  ) 
 # Display the summary statistics
 View(summary_stats)
 
