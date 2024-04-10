@@ -91,6 +91,12 @@ daily_traffic <- daily_traffic %>%
            lng >= min_lng & lng <= max_lng)
 
 
+# Adding population column 
+daily_traffic <- daily_traffic %>%
+  mutate(population = case_when(
+    year(count_date) >= 2012 & year(count_date) <= 2015 ~ 8244,
+    year(count_date) >= 2016 & year(count_date) <= 2020 ~ 8781
+  ))
 
 #### Save data ####
 write.csv(daily_traffic, here("data", "analysis_data", "cleaned-data.csv"), row.names = FALSE)

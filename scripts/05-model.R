@@ -10,6 +10,11 @@ library(MASS)
 library(dplyr)
 library(readr)
 library(car)
+library(ggplot2)
+
+cor(before_improvement[, c("daily_bus", "daily_peds", "daily_bike", "time_trend", "population")], use = "complete.obs")
+
+
 
 
 # Read and prepare data
@@ -45,40 +50,38 @@ cat("Observations after improvement:", nrow(after_improvement), "\n")
 model_before <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = before_improvement)
 summary(model_before)
 
-model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = after_improvement)
+model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend + population, data = after_improvement)
 summary(model_after)
 
 
+
 # Graphical representation of the model results for the 'before' improvement model
-before_plot <- ggplot(before_improvement, aes(x = time_trend, y = daily_cars)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "glm.nb", formula = y ~ x, se = FALSE) + 
-  labs(title = "Relationship Between Traffic and Time Before Improvements",
-       x = "Time Trend",
-       y = "Scaled Count of Cars") +
-  theme_minimal()
 
-# Display plot
-before_plot
+# For model_before
+before_fitted <- data.frame(observed = before_improvement$daily_cars, fitted = fitted(model_before))
+ggplot(before_fitted, aes(x = fitted, y = observed)) +
+  geom_point() +
+  geom_line(aes(x = fitted, y = fitted), color = "red") +
+  labs(title = "Observed vs. Fitted Values - Before Improvement",
+       x = "Fitted Values",
+       y = "Observed Values") +
+  theme_minimal()
+before_fitted
+
+# For model_after
+after_fitted <- data.frame(observed = after_improvement$daily_cars, fitted = fitted(model_after))
+ggplot(after_fitted, aes(x = fitted, y = observed)) +
+  geom_point() +
+  geom_line(aes(x = fitted, y = fitted), color = "red") +
+  labs(title = "Observed vs. Fitted Values - After Improvement",
+       x = "Fitted Values",
+       y = "Observed Values") +
+  theme_minimal()
+after_fitted
 
 # Save the plot
-ggsave(here("other", "outputs", "before_plot.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")
+# ggsave(here("other", "outputs", "before_plot.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")
 
-
-# Graphical representation of the model results for the 'after' improvement model
-after_plot <- ggplot(after_improvement, aes(x = time_trend, y = daily_cars)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "glm.nb", formula = y ~ x, se = FALSE) +
-  labs(title = "Relationship Between Traffic and Time After Improvements",
-       x = "Time Trend",
-       y = "Scaled Count of Cars") +
-  theme_minimal()
-
-# Display plot
-after_plot
-
-# Save the plot
-ggsave(here("other", "outputs", "after_plot.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")
 
 
 #### Save model ####
@@ -110,4 +113,14 @@ cooks.distance(model_after)
 # Plotting Cook's distance
 plot(cooks.distance(model_before), type = "h", main = "Cook's Distance - Before")
 plot(cooks.distance(model_after), type = "h", main = "Cook's Distance - After")
+
+
+
+# Fit a null model
+null_model <- glm.nb(daily_cars ~ 1, data = analysis_data)
+
+# Calculate McFadden's pseudo-R2
+mcfadden_r2 <- 1 - (logLik(model_before)/logLik(null_model))
+mcfadden_r2_value <- as.numeric(mcfadden_r2)  # Extract the numeric value
+print(mcfadden_r2_value)
 
