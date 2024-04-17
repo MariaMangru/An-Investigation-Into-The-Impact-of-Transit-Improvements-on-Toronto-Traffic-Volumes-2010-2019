@@ -11,9 +11,7 @@ library(dplyr)
 library(readr)
 library(car)
 library(ggplot2)
-
-cor(before_improvement[, c("daily_bus", "daily_peds", "daily_bike", "time_trend", "population")], use = "complete.obs")
-
+library(here)
 
 
 
@@ -50,7 +48,7 @@ cat("Observations after improvement:", nrow(after_improvement), "\n")
 model_before <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = before_improvement)
 summary(model_before)
 
-model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend + population, data = after_improvement)
+model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = after_improvement)
 summary(model_after)
 
 
@@ -80,7 +78,7 @@ ggplot(after_fitted, aes(x = fitted, y = observed)) +
 after_fitted
 
 # Save the plot
-# ggsave(here("other", "outputs", "before_plot.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")
+ggsave(here("other", "outputs", "before_plot.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")
 
 
 
@@ -114,13 +112,4 @@ cooks.distance(model_after)
 plot(cooks.distance(model_before), type = "h", main = "Cook's Distance - Before")
 plot(cooks.distance(model_after), type = "h", main = "Cook's Distance - After")
 
-
-
-# Fit a null model
-null_model <- glm.nb(daily_cars ~ 1, data = analysis_data)
-
-# Calculate McFadden's pseudo-R2
-mcfadden_r2 <- 1 - (logLik(model_before)/logLik(null_model))
-mcfadden_r2_value <- as.numeric(mcfadden_r2)  # Extract the numeric value
-print(mcfadden_r2_value)
 
