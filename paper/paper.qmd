@@ -1,5 +1,5 @@
 ---
-title: "The Route 508 Streetcar and Congestion on Toronto's Shoreline, 2011 - 2019"
+title: "The Route 508 Streetcar and Congestion on Toronto's Shoreline, 2011 - 2020"
 subtitle: "Examining Traffic Patterns Before and After Public Transit Access was Reinstated"
 author: 
   - Maria Mangru
@@ -7,12 +7,15 @@ thanks: "Code and data are available at: https://github.com/MariaMangru/Traffic-
 date: today
 date-format: long
 abstract: "This study investigates the impact of access to the Route 508 Lake Shore streetcar in Toronto on reducing urban car congestion from 2011 to 2020. By analyzing traffic volume data from the City of Toronto's Transportation Services Division and employing negative binomial regression models, we observed a notable shift in travel behavior, highlighted by a significant decrease in the correlation between bus traffic and car congestion. Specifically, the coefficient for daily bus traffic reduced from 0.261 to 0.096 after access was reinstated, indicating a reduction in car traffic as more public transit options became available. This highlights the effectiveness of enhancing public transit infrastructure not only in easing car congestion but also in contributing to broader environmental and economic benefits. By improving public transit, cities can potentially achieve sustainable development goals by providing equitable access to essential services and reducing environmental impacts, thereby improving quality of life for all urban residents."
-format: pdf
+format: 
+  pdf:
+    documentclass: article
+    geometry: [margin=1in]
 number-sections: true
 bibliography: references.bib
 ---
 
-```{r, echo=FALSE, message=FALSE}
+```{r, include= FALSE, echo=FALSE, message=FALSE}
 #| include: false
 #| warning: false
 #| message: false
@@ -28,13 +31,21 @@ library(stringr)
 library(broom)
 library(MASS) 
 library(car)
+library(patchwork)
+```
+
+```{r, include= FALSE, echo=FALSE, message=FALSE}
+
+#Import cleaned data 
+analysis_data <- read_csv(here("data", "analysis_data", "cleaned-data.csv"))
+
 ```
 
 # Introduction
 
 Traffic congestion represents a significant challenge for urban areas, negatively affecting economic productivity, environmental sustainability, and quality of life. In cities like Toronto, public transit improvements are often implemented as a strategic response to reduce reliance on personal vehicles and mitigate congestion. This study centers on the Route 508 Lake Shore streetcar in Toronto, examining its impact on urban traffic dynamics, particularly in reducing car congestion.
 
-The primary aim of this research is to evaluate the effect of the 508 Lake Shore streetcar enhancements on daily traffic patterns, focusing on how these changes influence the interaction between car traffic and other transportation modes such as buses, bicycles, and pedestrians. By employing traffic volume data collected by the City of Toronto's Transportation Services Division, we utilize negative binomial regression models to quantify the shifts in traffic patterns from 2011 to 2020. The estimand of this study is the change in the correlation between daily bus traffic and daily car traffic following the transit improvements.
+The primary aim of this research is to evaluate the effect of the 508 Lake Shore streetcar enhancements on daily traffic patterns, focusing on how these changes influence the interaction between car traffic and other transportation modes such as buses, bicycles, and pedestrians. By employing traffic volume data collected by the City of Toronto's Transportation Services Division, we utilize negative binomial regression models to quantify the shifts in traffic patterns from 2011 to 2020. The estimand of this study is the change in the correlation between daily bus traffic and daily car traffic following the transit improvements. For the purposes of this research, the terms "improvements" and "reinstating of the streetcar" are used interchangeably. Both terms refer to the suite of upgrades and changes implemented along the 508 Lake Shore route, which included the restoration of streetcar services that had previously been discontinued or altered.'
 
 The data source used is the Toronto OpenData portal, which provides comprehensive traffic counts across the city, making the analysis both robust and replicable. The data set, "Traffic Volumes at Intersections for All Modes," offers a granular view of the city's traffic flows at various intersections in the city.
 
@@ -46,7 +57,7 @@ The remainder of this paper is structured as follows: @sec-data introduces the d
 
 ## Data Source
 
-This research relies on traffic volume provided by the City of Toronto's Transportation Services Division, available through the Toronto OpenData portal. The dataset, titled "Traffic Volumes at Intersections for All Modes," is an open-access resource under the Open Government License - Toronto, ensuring broad usability and transparency. The data files for the years 2010-2019 were utilized, however, the data files are uploaded daily with data ranging from 1980 to present. The traffic volume data are cross-referenced with the City of Toronto's Street Centreline, Intersection File, and Street Traffic Signal datasets.
+This research relies on traffic volume provided by the City of Toronto's Transportation Services Division, available through the Toronto OpenData portal. The dataset, titled "Traffic Volumes at Intersections for All Modes," is an open-access resource under the Open Government License - Toronto, ensuring broad usability and transparency. The data files for the years 2010-2019 and 2020-2029 were utilized, however, the data files are uploaded daily with data ranging from 1980 to present. The traffic volume data are cross-referenced with the City of Toronto's Street Centreline, Intersection File, and Street Traffic Signal datasets.
 
 The data consist of two primary types of traffic counts, which capture detailed movement patterns across the city:
 
@@ -54,28 +65,20 @@ The data consist of two primary types of traffic counts, which capture detailed 
 
 2.  Turning Movement Counts (TMCs): These counts provide granular details at intersections, recording the volume of traffic movement (including turns) by various modes such as cars, trucks, buses, and bicycles. Each TMC includes data from eight non-continuous hours throughout a day, reported in 15-minute intervals.
 
-The analysis in this paper was conducted using the R programming language @citeR, which facilitated the statistical computations and data visualization. Further, a suite of R packages, including several from the tidyverse collection were utilized. The `dplyr` package was used the transformation and summarization of traffic data. For importing and processing string data, `readr` and `stringr` were utilized. The handling of date and time variables was done using `lubridate` and data visualization was achieved with `ggplot2`, allowing us to explore and reveal traffic patterns visually. Additionally, `tidyr` assisted in reshaping the data to ensure it was structured appropriately for analysis. File path management was handled using the `here` package, which was essential for ensuring reproducibility across different computing environments. 
+The analysis in this paper was conducted using the R programming language @citeR, which facilitated the statistical computations and data visualization. Further, a suite of R packages, including several from the tidyverse collection were utilized. The @dplyr package was used the transformation and summarization of traffic data. For importing and processing string data, @readr and @stringr were utilized. The handling of date and time variables was done using @lubridate and data visualization was achieved with @ggplot2, allowing us to explore and reveal traffic patterns visually. Additionally, @tidyverse assisted in reshaping the data to ensure it was structured appropriately for analysis. File path management was handled using the @here package, which was essential for ensuring reproducibility across different computing environments.
 
-
-The dataset was refined to aggregate daily totals for each mode of transportation, with the data aligned and merged based on date, location, and traffic mode specifics. 
-
-
+The dataset was refined to aggregate daily totals for each mode of transportation, with the data aligned and merged based on date, location, and traffic mode specifics. While the dataset was merged from two data files which span from 2010 to 2019 and 2020 to 2029, this research will focus on December 2011 to December 2014 and November 2018 to February 2020. These years were chosen to provide a comprehensive view of traffic patterns prior to, during, and following the enhancement of the 508 Lake Shore route. The data collection period was intentionally concluded in February 2020 to ensure that the results were not influenced by the disruptions caused by the COVID-19 pandemic.
 
 ## Variables of Interest
 
-In addition to a temporal trend variables, specific variables were chosen for this analysis, with an emphasis on the dynamics of car traffic in relation to bus, pedestrian, and bicycle traffic volumes:
-
--   Daily Car Traffic (`daily_cars`): Total volume of car traffic recorded at selected intersections along the 508 Route.
--   Daily Bus Traffic (`daily_bus`), Pedestrian Traffic (`daily_peds`) and Bicycle Traffic (`daily_bike`): Bus, pedestrian and bike traffic volumes used to indicate the presence and frequency of non personal car usage.
--   Time Trend (time_trend): A constructed variable to analyze traffic pattern changes over time.
-
+In this study, the examination of traffic dynamics is conducted by analyzing interactions among various modes of transportation at various intersections. As such, traffic counts for each mode of transit were aggregated to daily totals to allow for better analysis. For example, car traffic variables such as `sb_cars_l`, `nb_cars_r`, `eb_cars_t`, among others, representing different directions and types of car movements at intersections, were combined to form the Daily Car Traffic (`daily_cars`). This variable captures the total volume of car traffic and serves as a primary indicator of vehicular congestion. Similarly, this was done to create the variable Daily Bus Traffic (`daily_bus`), which helps in evaluating the volume and effectiveness of bus transit in relation to car traffic. Furthermore, Daily Pedestrian Traffic (`daily_peds`) and Daily Bicycle Traffic (`daily_bike`) were created to aid in understanding the prevalence and trends of non-vehicular traffic modes. A Time Trend variable (`time_trend`) was constructed to analyze the longitudinal changes in traffic patterns over time, providing insights into the temporal effects of transit improvements.
 
 ```{r summary-stats-table, echo=FALSE, message=FALSE, warning=FALSE}
-# Load the cleaned data
-cleaned_data <- read_csv(here("data", "analysis_data", "cleaned-data.csv"))
+#| label: tbl-trafficstats
+#| tbl-cap: Summary statistics of Daily Traffic Volume by mode of transportation. This table displays the mean and median counts of cars, buses, pedestrians, and bicycles
 
 # Generate summary statistics for traffic data
-summary_stats <- summarise(cleaned_data,
+summary_stats <- summarise(analysis_data,
   Mean_Cars = mean(daily_cars, na.rm = TRUE),
   Median_Cars = median(daily_cars, na.rm = TRUE),
   Mean_Buses = mean(daily_bus, na.rm = TRUE),
@@ -100,84 +103,83 @@ kable(summary_stats_df, format = "html",
       table.attr = 'style="width:100%;"') 
 ```
 
-The summary table above provides a quantitative comparison across transportation modes by condensing the traffic data for each mode into average and median statistics. The data reveals that car traffic surpasses other modes in volume, with the mean and median values for daily car traffic being the highest.
+The summary statistics presented in @tbl-trafficstats offers a quantitative comparison across different modes of transportation, capturing the daily traffic volumes on the 508 Lake Shore route. Notably, **Daily Car Traffic** significantly surpasses other modes of transit, with mean and median values at 14,169.85 and 13,291.5, respectively. This highlights the predominant use of cars in the area, highlighting the challenges of reducing vehicular congestion.
 
-```{r line-graph-cars, fig.cap="Daily Car Traffic Over Time. This graph displays the trend in number of cars within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.",fig.width=8, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE}
+In contrast, **Daily Bus Traffic** shows much lower volumes, with a mean of 223.91 and a median of 190.5, reflecting less frequent usage but indicating a critical focus area for transit improvements. **Daily Pedestrian Traffic** and **Daily Bicycle Traffic** also exhibit considerably lower traffic volumes, with means of 686.06 and 50.49, respectively. The pedestrian traffic presents a median significantly lower than its mean, at 344, suggesting a skewed distribution with potentially high traffic on certain days or specific intersections. Similarly, the median for bicycle traffic stands at 22, indicating that on many days, bicycle usage is quite low despite a higher average, which might reflect seasonal variations or special events influencing bike use.
 
-# Visualizing daily car traffic over time
-line_graph_car <- cleaned_data %>%
+\newpage
+
+```{r}
+#| label: fig-trafficplots
+#| fig-cap: Traffic Trends by Mode along the 508 Lakeshore Route from December 2011 to December 2014 and November 2018 to February 2020.
+#| echo: FALSE
+#| warning: FALSE
+#| message: FALSE
+
+# Base theme for all plots 
+base_theme <- theme_minimal() +
+  theme(plot.title = element_text(size = 10), 
+        axis.title = element_text(size = 8), 
+        axis.text = element_text(size = 6))
+
+# Car Traffic Plot
+line_graph_car <- analysis_data %>%
   ggplot(aes(x = count_date, y = daily_cars)) +
   geom_smooth(se = FALSE) +  
-  labs(title = "Daily Cars Traffic Over Time",
+  labs(title = "Car Traffic",
        x = "Date",
-       y = "Total Cars Traffic") +
-  theme_minimal()
+       y = "Total Cars") +
+  base_theme
 
-# Display car traffic plot
-line_graph_car
-
-```
-
-The daily variation in car traffic from 2011 to 2020 is shown in Figure 1. The traffic volume is depicted on a smooth line graph that first increases and peaks about 2016, after which it sharply declines. The fall that follows may point to the benefits of the Route 508 Lake Shore streetcar improvements on easing traffic congestion. The peak denotes a period of increased traffic.
-
-```{r line-graph-bus, fig.cap="Daily Bus Traffic Over Time. This graph displays the trend in number of buses within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.", fig.width=8, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE}
-
-# Visualizing daily bus traffic over time
-line_graph_buses <- cleaned_data %>%
+# Bus Traffic Plot
+line_graph_buses <- analysis_data %>%
   ggplot(aes(x = count_date, y = daily_bus)) +
   geom_smooth(se = FALSE) +
-  labs(title = "Daily Bus Traffic Over Time",
+  labs(title = "Bus Traffic",
        x = "Date",
-       y = "Total Bus Traffic") +
-  theme_minimal()
+       y = "Total Buses") +
+  base_theme
 
-# Display bus traffic plot
-line_graph_buses
-
-```
-
-Figure 2 depicts the daily patterns in bus traffic, which follow a similar pattern to that of car traffic. It is a smooth line graph that rises to a high around in 2016, then declines. This pattern might be an indication of how bus utilization has changed, which could be related to the streetcar route's service modifications and other improvements to public transportation.
-
-```{r line-graph-pedestrian, fig.cap="Daily Pedestrian Traffic Over Time. This graph displays the trend in number of pedestrian within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.", fig.width=8, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE}
-
-# Visualizing daily pedestrian traffic over time
-line_graph_pedestrians <- cleaned_data %>%
+# Pedestrian Traffic Plot
+line_graph_pedestrians <- analysis_data %>%
   ggplot(aes(x = count_date, y = daily_peds)) +
   geom_smooth(se = FALSE) +
-  labs(title = "Daily Pedestrian Traffic Over Time",
+  labs(title = "Pedestrian Traffic",
        x = "Date",
-       y = "Total Pedestrian Traffic") +
-  theme_minimal()
+       y = "Total Pedestrians") +
+  base_theme
 
-# Display pedestrian traffic plot
-line_graph_pedestrians
-
-```
-
-Variations in pedestrian traffic over is shown in Figure 3's line graph. The middle of the time period has a noteworthy decrease, which is followed by a rise and another decline. This could be attributed to a number of things, such as changes in walkability, urban development, and perhaps the availability of better public transportation alternatives that encourage walking as a mode of transportation.
-
-```{r line-graph-bike, fig.cap="Daily Bike Traffic Over Time. This graph displays the trend in number of bikes within the area of interest between December 2011 to December 2014 and November 2018 to February 2020.", fig.width=8, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE}
-
-# Visualizing daily bike traffic over time
-line_graph_cyclists <- cleaned_data %>%
+# Cyclist Traffic Plot
+line_graph_cyclists <- analysis_data %>%
   ggplot(aes(x = count_date, y = daily_bike)) +
   geom_smooth(se = FALSE) +
-  labs(title = "Daily Cyclist Traffic Over Time",
+  labs(title = "Cyclist Traffic",
        x = "Date",
-       y = "Total Cyclist Traffic") +
-  theme_minimal()
+       y = "Total Cyclists") +
+  base_theme
 
-# Display cyclist traffic plot
-line_graph_cyclists
+# Combine plots 
+combined_plots <- (line_graph_car | line_graph_buses) / 
+                  (line_graph_pedestrians | line_graph_cyclists) & 
+                  plot_layout(guides = 'collect') 
+
+combined_plots
 
 ```
 
-The pattern of bicycle traffic over time is depicted in Figure 4, where a notable rise and fall are shown on the line graph, indicating huge variations. The variations may be attributed to changing public opinions on riding, the implementation of bike infrastructure, or seasonal variations in weather patterns, which may be exacerbated by changes made to the transit system.
+@fig-trafficplots presents a visual analysis of the various modes of traffic from 2011 to 2020, demonstrating their respective trends and allowing for comparative insights. The car traffic graph illustrates an initial uptrend in volume, reaching a peak around 2016, followed by a pronounced decline that coincides with the reintroduction of the Route 508 Lake Shore streetcar, suggesting a potential correlation with improved public transit and a reduction in car use. Concurrently, bus traffic mirrors this pattern to a degree, with a rise and subsequent fall post-2016, hinting at an adaptive response in public transport usage. The pedestrian traffic trendline depicts a mid-period dip followed by a recovery and then a decline again. Cyclist traffic, on the other hand, displays a waveform pattern with significant ups and downs, possibly reflecting the impact of varied factors including public attitudes towards cycling, the introduction or enhancement of cycling infrastructure, and seasonal changes that affect cycling prevalence.
 
-```{r line-graph-time-trend, fig.cap="Daily Car Traffic Over Time. This graph displays the general trend in number of cars from the beginning of data collection period.", fig.width=8, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE}
+\newpage
+
+```{r}
+#| label: fig-cartimegraph
+#| fig-cap: Daily Car Traffic Over Time. This graph displays the general trend in number of cars from the beginning of data collection period.
+#| echo: FALSE
+#| warning: FALSE
+#| message: FALSE
 
 # Visualizing car traffic with respect to the time trend
-time_trend_graph_car <- cleaned_data %>%
+time_trend_graph_car <- analysis_data %>%
   ggplot(aes(x = time_trend, y = daily_cars)) +
   geom_point(aes(color = daily_cars), alpha = 0.5) + 
   geom_smooth(method = "lm", se = FALSE, color = "blue") +  
@@ -193,11 +195,13 @@ time_trend_graph_car
 
 ```
 
-The scatter plot illustrates the fluctuating daily car counts over time, with a trend line suggesting an initial increase in traffic followed by a decline.
+The scatter plot in @fig-cartimegraph, representing daily car traffic counts over time against a time trend, offers a granular view of the data. Each dot signifies the traffic volume on a single day, while the trend line captures the general trajectory over the entire data collection period. An initial increase in traffic volume is apparent, eventually giving way to a downward trend.
 
 # Model {#sec-model}
 
-This study uses negative binomial regression to address the problem of over-dispersion, which occurs when observed variance is greater than the mean and is frequently seen in count data. The dependent variable in the model is the daily count of cars, which is assumed to be impacted by temporal variations and the counts of alternative transportation modes (such as buses, bicycles, and pedestrians).
+Modeling traffic dynamics poses unique challenges, particularly with count data that often exhibit over-dispersion—where the variance exceeds the mean—making conventional regression models like Poisson unsuitable. To address this, this study employs a negative binomial regression model in order to handle over-dispersion and more aligned with the distribution characteristics of traffic counts.
+
+We define our model with the daily car traffic count as the dependent variable, hypothesizing its dependence on several factors: temporal trends and daily counts of alternative transport modes—buses, pedestrians, and bicycles.
 
 As such, we estimate the following model:
 
@@ -213,17 +217,20 @@ As such, we estimate the following model:
 ```
 ## Model justification
 
-There are two reasons for using negative binomial regression. First, since events tend to cluster together in both place and time, traffic count data usually show overdispersion. For such data, the negative binomial model makes sense since it allows the variance to surpass the mean. Second, given that traffic counts frequently deviate from a normal distribution, this model can account for their skewed nature.
+The rationale for selecting the negative binomial model is based on two primary areas. Firstly, traffic data are prone to clustering in both spatial and temporal dimensions, leading to overdispersion. Secondly, traffic count data typically skew away from a normal distribution, and the negative binomial model is equipped to address this skewness.
 
-The analysis is divided into two temporal models in order to evaluate the effects of the Route 508 Lake Shore streetcar service upgrades: `model_before`, which is the model before the improvements, and `model_after`, which is the model after the improvements. This method clarifies the relationship that existed before and after the policy intervention between the independent and dependent variables.
+To capture the effects of the Route 508 Lake Shore streetcar service reinstatement, the analysis dives into two temporal segments: pre-improvement (`model_before`) and post-improvement (`model_after`). This segmentation enables a nuanced understanding of the relationships between car traffic and alternative transport modes before and after the streetcar was reinstated. The `model_before` sets the baseline, showcasing the original dynamics between cars and other transport forms. The `model_after` reveals the traffic landscape streetcar service has resumed. This offers a comparative view to measure the efficacy of these public transit access improvements in mitigating car congestion.
 
-Together with a temporal trend, the `model_before` captures the baseline relationship between automobile traffic and other modes of transportation. As an illustration of possible changes in traffic patterns brought about by the improved streetcar service, the `model_after`, on the other hand, depicts the altered dynamics following the enhancement. By use of comparative analysis, these models demonstrate the effectiveness of the Route 508 enhancements in mitigating car congestion.
+This modeling approach not only provides insights into the immediate effects of transit policy changes but also establishes a methodological framework for future studies examining the longitudinal impact of urban transit interventions.
 
 # Results {#sec-results}
 
-```{r residuals-before-model, fig.cap="Residuals of the negative binomial regression model before and after the transit improvement. This plot helps to visualize if there are any patterns or systematic deviations unexplained by the model.", echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
-# Read and prepare data
-analysis_data <- read.csv(here("data", "analysis_data", "cleaned-data.csv"))
+```{r}
+#| label: fig-residualsmodel
+#| fig-cap: Residuals of the negative binomial regression model before and after the transit improvement. This plot helps to visualize if there are any patterns or systematic deviations unexplained by the model.
+#| echo: FALSE
+#| warning: FALSE
+#| message: FALSE
 
 # Scaling predictor variables for analysis
 analysis_data <- analysis_data %>%
@@ -251,23 +258,45 @@ model_before <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_t
 model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = after_improvement)
 
 # Visualizing residuals to identify patterns
-par(mfrow = c(1, 2))
-plot(residuals(model_before), type = "p", main = "Residuals of Model Before Improvement")
-plot(residuals(model_after), type = "p", main = "Residuals of Model After Improvement")
+#par(mfrow = c(1, 2))
+#plot(residuals(model_before), type = "p", main = "Residuals of Model Before Improvement")
+#plot(residuals(model_after), type = "p", main = "Residuals of Model After Improvement")
 
-# Examining the normality of residuals
-# hist(resid(model_before), main = "Histogram of Residuals - Before")
-# hist(resid(model_after), main = "Histogram of Residuals - After")
+
+# Adjust overall plot margins (bottom, left, top, right) and spacing for multi-figure plots
+par(mfrow = c(1, 2), mar = c(5, 4, 4.5, 2) + 0.1, mgp = c(2, 0.7, 0), tcl = -0.3, cex.main = 0.9)
+
+
+# Visualizing residuals for the 'before improvement' model
+plot(residuals(model_before), 
+     type = "p", 
+     main = "Residuals Before Improvement", 
+     xlab = "Index", 
+     ylab = "Residuals", 
+     xlim = c(0, max(length(residuals(model_before)), length(residuals(model_after)))),
+     ylim = range(c(residuals(model_before), residuals(model_after))))
+
+# Visualizing residuals for the 'after improvement' model
+plot(residuals(model_after), 
+     type = "p", 
+     main = "Residuals After Improvement", 
+     xlab = "Index", 
+     ylab = "Residuals", 
+     xlim = c(0, max(length(residuals(model_before)), length(residuals(model_after)))),
+     ylim = range(c(residuals(model_before), residuals(model_after))))
+
 ```
 
-Figures 6 and 7 show an examination of residuals from the negative binomial regression models before and after the public transit improvement. For the model before improvements, the residuals plot does not indicate any apparent patterns or systemic deviations, suggesting that the model's assumptions may be adequate for the data. After the transit improvements, the residuals' plot again shows no obvious patterns, which suggests a random scatter.
+The residual plots depicted in @fig-residualsmodel serve as a diagnostic tool to evaluate the adequacy of the negative binomial regression models used in this study, both before and after the implementation of public transit improvements. The left panel of the figure illustrates the residuals for the model before the reinstatement of the Route 508 Lake Shore streetcar, showing a random dispersion of data points around the zero line. This lack of systematic pattern suggests that the model assumptions are met, indicating a good fit for the pre-improvement traffic data.
 
-\newpage
+Similarly, the right panel of the figure, representing the residuals post-improvement, exhibits a scatter of data points without discernible trends or biases. The randomness observed in the distribution of these residuals supports the conclusion that the post-improvement model is also well-fitted to the data, capturing the essential variability in daily car counts without leaving unexplained structure in the residuals.
 
-```{r model summaries, echo=FALSE, message=FALSE, warning=FALSE}
+```{r}
+#| echo: FALSE
+#| warning: FALSE
+#| message: FALSE
 
 # Read and prepare data
-analysis_data <- read.csv(here("data", "analysis_data", "cleaned-data.csv"))
 analysis_data$count_date <- as.Date(analysis_data$count_date)
 
 # Scaling predictor variables for analysis
@@ -289,44 +318,61 @@ after_improvement <- subset(analysis_data, count_date >= start_after & count_dat
 
 analysis_data <- analysis_data %>%
   mutate(time_trend = as.numeric(count_date - min(count_date, na.rm = TRUE)))
+```
+
+```{r}
+#| label: tbl-modelbeforesummaries
+#| tbl-cap: "Model Summary of Traffic Patterns Before Improvement on the 508 Lakeshore Route"
+#| echo: FALSE
+#| warning: FALSE
+#| message: FALSE
 
 # Building negative binomial regression models for before and after improvement
 model_before <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = before_improvement)
-model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = after_improvement)
 
 # Tidying the model summaries 
-tidy_model_before <- tidy(model_before)
-tidy_model_after <- tidy(model_after)
+tidy_model_before <- broom::tidy(model_before)
 
-# Model before improvement
-kable(tidy_model_before, format = "latex", booktabs = TRUE, caption = "Negative Binomial Regression Model - Before Improvement") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = F) %>%
+# Model before improvement table
+kable(tidy_model_before, format = "latex", booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
   column_spec(1, bold = TRUE, width = "3cm") %>%
-  column_spec(2, bold = TRUE, color = "blue", width = "3cm") %>%
-  column_spec(3, width = "3cm")
-
-kable(tidy_model_after, format = "latex", booktabs = TRUE, caption = "Negative Binomial Regression Model - After Improvement") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"),
-                full_width = F) %>%
-  column_spec(1, bold = TRUE, width = "3cm") %>%
-  column_spec(2, bold = TRUE, color = "blue", width = "3cm") %>%
-  column_spec(3, width = "3cm")
-
+  column_spec(2, color = "blue", width = "3cm") %>%
+  column_spec(3, width = "3cm") %>%
+  column_spec(4, width = "3cm") %>%
+  column_spec(5, width = "3cm")
 
 ```
 
-Table 2 represents the traffic patterns before the improvement. These results produced significant coefficients for both the intercept and daily bus traffic, as well as the time trend variable. The intercept, representing the baseline log-count of cars when all other variables are zero, was significant with an estimate of 9.340 and a standard error of 0.072, indicating a high baseline traffic volume. Daily bus traffic had a positive and significant relationship with car traffic, with a coefficient of 0.261, suggesting that increases in bus traffic were associated with increases in car traffic. The time trend also showed a significant, albeit small, positive effect on car traffic `(β = 0.000287)`, indicating a gradual increase in car traffic over time.
+The pre-improvement model, as detailed in @tbl-modelbeforesummaries, reveals significant coefficients for both the intercept and daily bus traffic, alongside a temporal trend. With a coefficient of 9.34, the model showcases a high baseline volume of car traffic, independent of other variables. Bus traffic, represented by a coefficient of 0.261, appears to move in tandem with car traffic, implying that increases in bus usage were historically linked to increases in car traffic. However, the coefficients for pedestrian and bicycle traffic do not present a significant association with car traffic, reflecting a p-value greater than 0.05 for both.
 
-Pedestrian and bicycle traffic, however, were not significantly associated with car traffic before the improvements (p \> 0.05 for both).
+```{r}
+#| label: tbl-modelaftersummaries
+#| tbl-cap: "Model Summary of Traffic Patterns After Improvement on the 508 Lakeshore Route"
+#| echo: FALSE
+#| warning: FALSE
+#| message: FALSE
 
-Post-improvement, the model exhibits significant changes in the dynamics of traffic patterns. The intercept remains significant but increases to 12.283, reflecting an overall higher baseline of car traffic possibly due to other factors. The coefficient for daily bus traffic notably decreases to 0.096, indicating a diminished relationship between bus and car traffic after the public transit improvements.
+# Building negative binomial regression models for before and after improvement
+model_after <- glm.nb(daily_cars ~ daily_bus + daily_peds + daily_bike + time_trend, data = after_improvement)
 
-The time trend shifts from a slight increase to a significant decrease `(β = -0.001033)`, reflecting a reversal in the car traffic trend, which now shows a significant decline over time post-improvement.
+# Tidying the model summaries 
+tidy_model_after <- broom::tidy(model_after)
 
-Variables for pedestrian and bicycle traffic remained non-significant, suggesting that these modes of transport did not have a substantial impact on car traffic volumes in either model.
+# Model after improvement table
+kable(tidy_model_after, format = "latex", booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2, color = "blue", width = "3cm") %>%
+  column_spec(3, width = "3cm") %>%
+  column_spec(4, width = "3cm") %>%
+  column_spec(5, width = "3cm")
 
-The model results indicate a significant reduction in the relationship between bus traffic and car congestion following the transit improvements, as shown by the decrease in the coefficient of daily bus traffic from 0.261 to 0.096. This suggests that improvements in the public transit system might be effectively alleviating car congestion. Additionally, the significant negative time trend in the post-improvement model underscores a successful overall reduction in car traffic between 2012 to 2020.
+```
+
+Conversely, the post-improvement model shown in @tbl-modelaftersummaries exhibits a marked change in these dynamics. The increase in the intercept to 12.283 suggests an elevated baseline of car traffic, potentially as a result of external influences not accounted for in the model. The coefficient for daily bus traffic experiences a considerable reduction to 0.096, signaling a weakened relationship between bus and car traffic in the wake of the transit improvements. This could indicate a disconnect of these modes of transport, possibly due to more passengers opting for the improved public transit system over personal vehicles. The time trend coefficient inverses to -0.001033, denoting a statistically significant decline in car traffic over time post-improvement, showcasing the potential efficacy of the public transit enhancements in reducing car traffic.
+
+These findings show that following the public transit improvements, the relationship between bus traffic and car congestion significantly diminished, potentially reflective of the transit system's capacity to alleviate car congestion. Additionally, the persistent non-significance of pedestrian and bicycle traffic variables implies these modes have not impacted car traffic volumes in the models considered.
 
 # Discussion {#sec-discussion}
 
@@ -334,17 +380,17 @@ The model results indicate a significant reduction in the relationship between b
 
 This study’s analysis, centered on the Route 508 Lake Shore streetcar enhancements in Toronto, demonstrates a statistically significant divergence of bus traffic from car congestion trends, suggesting that improvements to public transit infrastructure can effectively reduce car congestion in urban areas. Specifically a decrease in the coefficient for `daily_bus` from 0.261 to 0.096 post-improvement, indicates a notable shift in travel behaviour.
 
-These local findings align with research conducted by Verbavatz and Barthelemy `source` in which they found that urban area size and public transport density are pivotal in managing car traffic in cities, rather than urban density alone. The article further states that enhancing the density and accessibility of public transport is a viable path to mitigating traffic and its associated environmental impacts.
+These local findings align with research conducted by @Verbavatz2019 in which they found that urban area size and public transport density are pivotal in managing car traffic in cities, rather than urban density alone. The article further states that enhancing the density and accessibility of public transport is a viable path to mitigating traffic and its associated environmental impacts.
 
-Moreover, the benefits of improved public transit does not stop at decreased car congestion. Insights from the American Public Transportation Association, which illustrate that public transit investments yield substantial congestion relief and economic benefits. Specifically, every dollar spent on public transportation generates 5 dollars in economic return and an associated creation of approximately 50,000 jobs for every billion dollars invested `source`. While on the individual level, households in America can save more than \$13,000 per year by using public transit and owning one less car.
+Moreover, the benefits of improved public transit does not stop at decreased car congestion. Insights from the @APTA2023, which illustrate that public transit investments yield substantial congestion relief and economic benefits. Specifically, every dollar spent on public transportation generates 5 dollars in economic return and an associated creation of approximately 50,000 jobs for every billion dollars invested . While on the individual level, households in America can save more than \$13,000 per year by using public transit and owning one less car.
 
-These advantages of public transportation investments are in alignment with the principles of sustainable development as defined by the UN's World Commission on Environment and Development: to meet current needs without compromising the ability of future generations to meet their own needs `source`. Together, these strands of evidence support the case for enhancing public transit as a strategic approach to improving urban traffic conditions and achieving broader sustainability goals.
+These advantages of public transportation investments are in alignment with the principles of sustainable development as defined by the UN's World Commission on Environment and Development: to meet current needs without compromising the ability of future generations to meet their own needs (@Lachman2013Chapter3). Together, these strands of evidence support the case for enhancing public transit as a strategic approach to improving urban traffic conditions and achieving broader sustainability goals.
 
 ## Good public transit provides access to essential services and promotes social equity
 
 Public transit systems supports not only the movement of people from place to place but also acts a vital channel for economic empowerment and social integration. Access to jobs, education, healthcare, and cultural institutions are fundamental rights, and equitable public transit policies are crucial to ensuring that these services are available to all individuals, regardless of their socioeconomic status.
 
-Supporting this claim, Lexer Quamie's research (2011) `source` highlights the integral role of transportation policy in civil rights, particularly in periods of pronounced unemployment and income disparity. Quamie emphasizes that transportation decisions significantly affect who can access employment opportunities and essential services, positioning public transit as a pivotal tool in the fight for civil rights. By facilitating or hindering access to critical resources, transportation policies not only impact economic outcomes but also health and environmental conditions. This is evident as inadequate or unaffordable public transit disproportionately affects low-income populations, limiting their ability to reach jobs, healthcare, and thereby affecting their overall economic and health status. Additionally, prioritization of car travel over public transit can lead to increased emissions, affecting urban air quality and contributing to environmental degradation.
+Supporting this claim, @Quamie2011 research highlights the integral role of transportation policy in civil rights, particularly in periods of pronounced unemployment and income disparity. Quamie emphasizes that transportation decisions significantly affect who can access employment opportunities and essential services, positioning public transit as a pivotal tool in the fight for civil rights. By facilitating or hindering access to critical resources, transportation policies not only impact economic outcomes but also health and environmental conditions. This is evident as inadequate or unaffordable public transit disproportionately affects low-income populations, limiting their ability to reach jobs, healthcare, and thereby affecting their overall economic and health status. Additionally, prioritization of car travel over public transit can lead to increased emissions, affecting urban air quality and contributing to environmental degradation.
 
 Moreover, the significance of social equity in public transit is underscored by the stigma associated with bus ridership, particularly among racial minorities and economically marginalized groups. This stigma can lead to policies that inadvertently reinforce social inequities. Actively combating such biases, transit policymakers can ensure that public transit remains an inclusive service that aligns with the broader goals of sustainable development.
 
@@ -364,13 +410,261 @@ Future research directions should broaden the analytical framework to incorporat
 
 # Appendix {.unnumbered}
 
-# Additional data details
+## Motivation
 
-# Model details {#sec-model-details}
+For what purpose was the dataset created? Was there a specific task in mind? Was there a specific gap that needed to be filled? Please provide a description.
 
-## Posterior predictive check
+-   The dataset was created to explore the impact of public transit infrastructure enhancements in Toronto, with a particular focus on the Route 508 Lake Shore streetcar. It hopes to address the gap in understanding how access to improved public transit could influence traffic congestion in urban environments.
 
-## Diagnostics
+Who created the dataset (for example, which team, research group) and on behalf of which entity (for example, company, institution, organization)?
+
+-   The dataset was compiled by Maria Mangru using data provided by the The City of Toronto's Transportation Services Division.
+
+Who funded the creation of the dataset? If there is an associated grant, please provide the name of the grantor and the grant name and number.
+
+-   Unknown. The dataset was sourced from the City of Toronto's Transportation Services Division, which is typically funded by municipal budgets rather than specific grants.
+
+Any other comments?
+
+-   No additional comments.
+
+## Composition
+
+What do the instances that comprise the dataset represent (for example, documents, photos, people, countries)? Are there multiple types of instances (for example, movies, users, and ratings; people and interactions between them; nodes and edges)? Please provide a description.
+
+-   Each instance within the dataset represents a specific time and location intersection within Toronto, capturing various modes of traffic volume, such as cars, buses, pedestrians, and cyclists.
+
+How many instances are there in total (of each type, if appropriate)?
+
+-   Over 200 instances in the cleaned dataset.
+
+Does the dataset contain all possible instances or is it a sample (not necessarily random) of instances from a larger set? If the dataset is a sample, then what is the larger set? Is the sample representative of the larger set (for example, geographic coverage)? If so, please describe how this representativeness was validated/verified. If it is not representative of the larger set, please describe why not (for example, to cover a more diverse range of instances, because instances were withheld or unavailable).
+
+-   The dataset is intended to represent all traffic volume counts at selected city intersections and is not a random sample; it's a comprehensive aggregation across multiple years.
+
+What data does each instance consist of? “Raw” data (for example, unprocessed text or images) or features? In either case, please provide a description. Each instance consists of counts of death including demographic data (race and sex) and year. Is there a label or target associated with each instance? If so, please provide a description.
+
+-   Each instance includes aggregated traffic volume counts for different modes of transport at various intersections in Toronto in addition to the date this instance was observed.
+
+Is there a label or target associated with each instance?
+
+-   Yes, instances could be labeled with unique identifiers such as the intersection ID and the date and time of the traffic counts.
+
+Is any information missing from individual instances? If so, please provide a description, explaining why this information is missing (for example, because it was unavailable). This does not include intentionally removed information, but might include, for example, redacted text.
+
+-   No.
+
+Are relationships between individual instances made explicit (for example, users’ movie ratings, social network links)? If so, please describe how these relationships are made explicit.
+
+-   The data includes both temporal and spatial data for each instance such as the time and location coordinates.
+
+Are there recommended data splits (for example, training, development/validation, testing)? If so, please provide a description of these splits, explaining the rationale behind them.
+
+-   No.
+
+Are there any errors, sources of noise, or redundancies in the dataset? If so, please provide a description.
+
+-   As with any real-world dataset, some level of noise, error, or redundancy is likely but none have been observed to date.
+
+Is the dataset self-contained, or does it link to or otherwise rely on external resources (for example, websites, tweets, other datasets)? If it links to or relies on external resources, a) are there guarantees that they will exist, and remain constant, over time; b) are there official archival versions of the complete dataset (that is, including the external resources as they existed at the time the dataset was created); c) are there any restrictions (for example, licenses, fees) associated with any of the external resources that might apply to a dataset consumer? Please provide descriptions of all external resources and any restrictions associated with them, as well as links or other access points, as appropriate.
+
+-   The dataset is self-contained and does not rely on external resources for its primary analyses.
+
+Does the dataset contain data that might be considered confidential (for example, data that is protected by legal privilege or by doctor-patient confidentiality, data that includes the content of individuals’ non-public communications)? If so, please provide a description.
+
+-   No, the dataset consists of aggregated traffic counts that are non-confidential and derived from public domain sources.
+
+Does the dataset contain data that, if viewed directly, might be offensive, insulting, threatening, or might otherwise cause anxiety? If so, please describe why.
+
+-   No, the dataset is strictly numerical and traffic-related, with no content that could be considered offensive or anxiety-inducing.
+
+Does the dataset identify any sub-populations (for example, by age, gender)? If so, please describe how these subpopulations are identified and provide a description of their respective distributions within the dataset.
+
+-   No, the dataset does not identify any sub-populations, as it deals with vehicles and traffic, not individuals.
+
+Is it possible to identify individuals (that is, one or more natural persons), either directly or indirectly (that is, in combination with other data) from the dataset? If so, please describe how.
+
+-   No, individuals cannot be identified from this dataset as it does not contain personal data.
+
+Does the dataset contain data that might be considered sensitive in any way (for example, data that reveals race or ethnic origins, sexual orientations, religious beliefs, political opinions or union memberships, or locations; financial or health data; biometric or genetic data; forms of government identification, such as social security numbers; criminal history)? If so, please provide a description.
+
+-   No sensitive information pertaining to individuals is included. The dataset only contains information related to traffic volumes and patterns.
+
+Any other comments?
+
+-   No additional comments.
+
+## Collection process
+
+How was the data associated with each instance acquired? Was the data directly observable (for example, raw text, movie ratings), reported by subjects (for example, survey responses), or indirectly inferred/derived from other data (for example, part-of-speech tags, model-based guesses for age or language)? If the data was reported by subjects or indirectly inferred/derived from other data, was the data validated/verified? If so, please describe how.
+
+-   The data for each instance were obtained from automatic traffic recorders and manual counts at intersections. These data collection methods are considered direct observations of traffic volumes.
+
+What mechanisms or procedures were used to collect the data (for example, hardware apparatuses or sensors, manual human curation, software programs, software APIs)? How were these mechanisms or procedures validated?
+
+-   Data were collected using a combination of hardware apparatuses, such as automatic traffic recorders (ATR), and manual turning movement counts (TMCs). The procedures and equipment were likely standardized and validated by the city's transportation services to ensure accuracy.
+
+If the dataset is a sample from a larger set, what was the sampling strategy (for example, deterministic, probabilistic with specific sampling probabilities)?
+
+-   The dataset is a comprehensive collection of traffic volumes at various intersections within Toronto, not a sample from a larger set.
+
+Who was involved in the data collection process (for example, students, crowdworkers, contractors) and how were they compensated (for example, how much were crowdworkers paid)?
+
+-   The data collection was performed by the City of Toronto's Transportation Services Division, which employs trained personnel for such tasks. Compensation details for city employees are typically determined by municipal guidelines and salary scales.
+
+Over what timeframe was the data collected?
+
+-   The dataset encompasses traffic volume data from 2010 to 2024, which likely matches the creation timeframe for the instances.
+
+Were any ethical review processes conducted (for example, by an institutional review board)? If so, please provide a description of these review processes, including the outcomes, as well as a link or other access point to any supporting documentation.
+
+-   For data collection that involves public transportation metrics without personal identifiers, ethical review processes are generally not applicable.
+
+Did you collect the data from the individuals in question directly, or obtain it via third parties or other sources (for example, websites)?
+
+-   Data were collected directly from the traffic volumes and movements at intersections, not from individuals.
+
+Were the individuals in question notified about the data collection? If so, please describe (or show with screenshots or other information) how notice was provided, and provide a link or other access point to, or otherwise reproduce, the exact language of the notification itself.
+
+-   Not applicable as the dataset consists of traffic counts, not personal data.
+
+Did the individuals in question consent to the collection and use of their data?
+
+-   Not applicable as no individual personal data was collected.
+
+If consent was obtained, were the consenting individuals provided with a mechanism to revoke their consent in the future or for certain uses?
+
+-   Consent and mechanisms to revoke consent are not applicable to this dataset.
+
+Has an analysis of the potential impact of the dataset and its use on data subjects been conducted
+
+-   Given the dataset contains aggregated non-personal data regarding traffic volumes, an analysis of the impact on data subjects would not be applicable.
+
+Any other comments?
+
+-   No additional comments. The dataset is designed for urban planning and transportation analysis and does not involve personal data collection.
+
+## Preprocessing/cleaning/labeling
+
+Was any preprocessing/cleaning/labeling of the data done?
+
+-   Yes, preprocessing and cleaning of the data were done. This included aggregating traffic volumes to daily totals, cleaning anomalies, filtering data for relevant time periods, and aligning the dataset for comparative analysis before and after the implementation of transit improvements.
+
+Was the “raw” data saved in addition to the preprocessed/cleaned/labeled data?
+
+-   Yes. Both the raw and cleaned data were saved to this project.
+
+Is the software that was used to preprocess/clean/label the data available?
+
+-   Yes, R programming language and its various packages were used for data preprocessing, cleaning, and analysis. The specific scripts used for this can be found on this GitHub repository (<https://github.com/MariaMangru/Traffic-Congestion-on-Toronto-s-Shoreline>).
+
+Any other comments?
+
+-   No additional comments.
+
+## Uses
+
+Has the dataset been used for any tasks already?
+
+-   The dataset has been used for the current study, which investigates the impact of public transit improvements on urban car congestion, utilizing traffic volume data to examine changes in traffic patterns over time.
+
+Is there a repository that links to any or all papers or systems that use the dataset?
+
+-   This repository (<https://github.com/MariaMangru/Traffic-Congestion-on-Toronto-s-Shoreline>) is the only one to day which uses this dataset.
+
+What (other) tasks could the dataset be used for?
+
+-   Beyond studying traffic congestion, the dataset could potentially be used for urban planning, environmental impact assessments, and public policy formulation regarding transportation and mobility in urban areas. It may also be relevant for studies on the socio-economic implications of traffic patterns.
+
+Is there anything about the composition of the dataset or the way it was collected and preprocessed/cleaned/labeled that might impact future uses?
+
+-   The dataset is specific to traffic volumes in Toronto and reflects the unique urban and transit infrastructure of the city. Users should be cautious about generalizing findings to other cities without considering local differences.
+
+Are there tasks for which the dataset should not be used?
+
+-   The dataset should not be used for tasks that require personal, sensitive, or confidential data as it is composed of aggregated non-personal traffic volumes.
+
+Any other comments?
+
+-   No additional comments.
+
+## Distribution
+
+Will the dataset be distributed to third parties outside of the entity (for example, company, institution, organization) on behalf of which the dataset was created? If so, please provide a description.
+
+-   The dataset is available through the NYC Open Data Profile.
+
+When will the dataset be distributed?
+
+-   The dataset is uploaded and distributed annually through the NYC Open Data Profile.
+
+Have any third parties imposed IP-based or other restrictions on the data associated with the instances? If so, please describe these restrictions, and provide a link or other access point to, or otherwise reproduce, any relevant licensing terms, as well as any fees associated with these restrictions.
+
+-   None that are known.
+
+Do any export controls or other regulatory restrictions apply to the dataset or to individual instances If so, please describe these restrictions, and provide a link or other access point to, or otherwise reproduce, any supporting documentation.
+
+-   None that are known.
+
+Will the dataset be distributed to third parties outside of the entity on behalf of which the dataset was created?
+
+-   The dataset, as obtained from the Toronto OpenData portal, is already publicly available. As such, it can be accessed by third parties for analysis and research purposes.
+
+How will the dataset be distributed? Does the dataset have a digital object identifier (DOI)?
+
+-   The dataset is distributed through the Toronto OpenData portal, typically in CSV format. It does not have a DOI as it is continuously updated by the city's transportation services division and not a static dataset.
+
+When will the dataset be distributed?
+
+-   The dataset is currently available and is periodically updated by the Toronto OpenData Portal.
+
+Will the dataset be distributed under a copyright or other intellectual property (IP) license, and/or under applicable terms of use (ToU)?
+
+-   The dataset from the Toronto OpenData portal is under an open government license, which allows for free use, modification, and sharing of the data, as long as the City of Toronto is credited for the data.
+
+Have any third parties imposed IP-based or other restrictions on the data associated with the instances?
+
+-   There are no known IP-based or other restrictions imposed by third parties on the dataset.
+
+Do any export controls or other regulatory restrictions apply to the dataset or to individual instances?
+
+-   There are no known export controls or regulatory restrictions that apply to this dataset, as it consists of non-sensitive, aggregated traffic volume data.
+
+Any other comments?
+
+-   Any researcher or user of this dataset should ensure proper attribution as per the licensing terms of the City of Toronto and should verify that they are using the most up-to-date data available.
+
+## Maintenance
+
+Who will be supporting/hosting/maintaining the dataset?
+
+-   The dataset is maintained by the City of Toronto's Transportation Services Division.
+
+How can the owner/curator/manager of the dataset be contacted?
+
+-   Inquiries regarding the dataset can be directed to the City of Toronto's Transportation Services team at (VolumeCollision_Requests\@toronto.ca).
+
+Is there an erratum? There is no official erratum; however, the dataset is subject to updates and corrections as part of its regular maintenance schedule.
+
+Will the dataset be updated?
+
+-   The dataset is regularly updated by the Transportation Services Division. Updates, including changes in traffic volumes or infrastructure, are typically communicated through the OpenData portal.
+
+Are there applicable limits on the retention of the data associated with the instances?
+
+-   The dataset does not include personal data, and therefore retention limits associated with personal data do not apply.
+
+Will older versions of the dataset continue to be supported/hosted/maintained?
+
+-   The OpenData portal maintains a history of updates, allowing for access to previous versions of the dataset. However, users are encouraged to use the most current data.
+
+If others want to extend/augment/build on/contribute to the dataset, is there a mechanism for them to do so?
+
+-   Contributions to the city's open data, such as corrections or enhancements, can be done through communication with the Open Data team. However, contributions are subject to validation and incorporation by the city staff.
+
+Any other comments?
+
+-   Users of the dataset should regularly check the OpenData portal for updates and note the date of the version they are using in their analysis to ensure reproducibility.
 
 \newpage
 
