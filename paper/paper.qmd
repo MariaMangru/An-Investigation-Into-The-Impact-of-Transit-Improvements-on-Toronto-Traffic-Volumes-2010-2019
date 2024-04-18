@@ -1,5 +1,5 @@
 ---
-title: "The Route 508 Streetcar and Congestion on Toronto's Shoreline, 2011 - 2020"
+title: "The Route 508 Streetcar and Congestion on Toronto's Shoreline, 2011 - 2019"
 subtitle: "Examining Traffic Patterns Before and After Public Transit Access was Reinstated"
 author: 
   - Maria Mangru
@@ -32,27 +32,34 @@ library(car)
 
 # Introduction
 
-Traffic congestion represents a significant challenge for urban cities. It is a non-productive activity which negatively affects economic efficiency, environmental sustainability and overall quality of life. To address this challenge, many cities like Toronto have undergone improvements to public transit infrastructure with the aim of reducing car dependency and mitigate traffic congestion. However, it is still highly debatable whether or not such improvements lead to a decrease in car congestion.
+Traffic congestion represents a significant challenge for urban areas, negatively affecting economic productivity, environmental sustainability, and quality of life. In cities like Toronto, public transit improvements are often implemented as a strategic response to reduce reliance on personal vehicles and mitigate congestion. This study centers on the Route 508 Lake Shore streetcar in Toronto, examining its impact on urban traffic dynamics, particularly in reducing car congestion.
 
-This study specifically investigates the 508 Lake Shore Streetcar route in Toronto. It utilizes two datasets provided by the City of Toronto's Transportation Services Division. These datasets capture traffic volumes for various modes at city intersections. To analyze this data, @citeR was used along with several R packages. Through the use of a negative binomial regression, we can assess daily car traffic relative to bus traffic, pedestrian, bicycle flows and a time trend. Models were created to investigate traffic patterns before and after public transit improvements.
+The primary aim of this research is to evaluate the effect of the 508 Lake Shore streetcar enhancements on daily traffic patterns, focusing on how these changes influence the interaction between car traffic and other transportation modes such as buses, bicycles, and pedestrians. By employing traffic volume data collected by the City of Toronto's Transportation Services Division, we utilize negative binomial regression models to quantify the shifts in traffic patterns from 2011 to 2020. The estimand of this study is the change in the correlation between daily bus traffic and daily car traffic following the transit improvements.
 
-The estimand of this study is quantitatively evaluated through the change in the relationship between daily bus traffic and daily car traffic, as well as the evolution of car traffic trends over time. The findings from this study indicates a significant reduction in the relationship between bus traffic and car congestion, following the transit improvements. Additionally, a reversal from an increasing to a decreasing trend in car traffic over time was noted.
+The data source used is the Toronto OpenData portal, which provides comprehensive traffic counts across the city, making the analysis both robust and replicable. The data set, "Traffic Volumes at Intersections for All Modes," offers a granular view of the city's traffic flows at various intersections in the city.
 
-This research begins with an in-depth exploration of the dataset and the analytical methods employed, highlighting the use of @citeR for data analysis. It then goes on to explain the results of the regression model, comparing and contrasting traffic patterns prior to and following the installation of transportation upgrades. The discussion interprets these findings within the broader framework of managing urban congestion and the importance of public transit. Through this approach, I hope to illustrate the important role of public transit improvements in combating urban congestion, as well as its significance for promoting sustainable urban mobility and improving the standard of living in urban areas.
+This investigation not only sheds light on the specific case of the Route 508 Lake Shore but aims to contribute to a broader understanding of how enhancing public transit infrastructure can significantly alter urban mobility patterns.
+
+The remainder of this paper is structured as follows: @sec-data introduces the data used for analysis, detailing the sources, preparation, and specific variables considered, alongside initial descriptive statistics and visualizations. @sec-model presents the negative binomial regression model, justifying its use over other models and detailing the statistical methods employed to analyze the traffic volume data. @sec-results displays the results of the analysis, interpreting the changes in traffic patterns before and after the public transit improvements, with a focus on the correlation between different modes of transportation. @sec-discussion provides a discussion on the implications of the findings, considering the broader context of urban congestion management and the role of public transit in promoting sustainable urban mobility. This section also outlines the limitations of the current study and suggests areas for further research.
 
 # Data {#sec-data}
 
 ## Data Source
 
-This research relies on traffic volume data sets from the City of Toronto's Transportation Services Division. It accessible through the Toronto OpenData portal and is titled "Traffic Volumes at Intersections for All Modes" which is free and accessible for public use. The information collected in the dataset are of two main types:
+This research relies on traffic volume provided by the City of Toronto's Transportation Services Division, available through the Toronto OpenData portal. The dataset, titled "Traffic Volumes at Intersections for All Modes," is an open-access resource under the Open Government License - Toronto, ensuring broad usability and transparency. The data files for the years 2010-2019 were utilized, however, the data files are uploaded daily with data ranging from 1980 to present. The traffic volume data are cross-referenced with the City of Toronto's Street Centreline, Intersection File, and Street Traffic Signal datasets.
 
-1.  Automatic Traffic Recorder Counts (ATR): These are segment-level volumes which capture the total number of vehicles, cyclists, or pedestrians moving in a specific direction on a street.
+The data consist of two primary types of traffic counts, which capture detailed movement patterns across the city:
 
-2.  Turning Movement Counts (TMCs): These detail the volume observed at each leg of an intersection, including the turning movement by mode (car, truck, bus, pedestrian, cyclist, other).
+1.  Automatic Traffic Recorder (ATR) Counts: These counts measure segment-level volumes, capturing the movement of vehicles, cyclists, and pedestrians in specific directions along city streets. For example, ATR data might include the total number of eastbound cyclists on Queen Street.
 
-The data set covers various intersections across Toronto, providing a detailed view of the city's traffic dynamics. It includes data spanning 2010-2019 and 2020-2024 which was combined into one data set. The data set is segmented by direction of approach, turning movement, and mode, in 15-minute intervals. This level of detail allows for a thorough investigation of traffic patterns, which is especially important for analyzing how changes to public transport affect traffic congestion on the 508 Lake Shore route.
+2.  Turning Movement Counts (TMCs): These counts provide granular details at intersections, recording the volume of traffic movement (including turns) by various modes such as cars, trucks, buses, and bicycles. Each TMC includes data from eight non-continuous hours throughout a day, reported in 15-minute intervals.
 
-The data set was cleaned and prepared, with yearly data files combined, relevant date periods filtered, and traffic volumes aggregated to get daily totals for every mode of transportation. This pre-processing step made sure the data was suitable for analysis, with a particular emphasis on the time frame prior to and following the 508 Lake Shore route's streetcar upgrades.
+The analysis in this paper was conducted using the R programming language @citeR, which facilitated the statistical computations and data visualization. Further, a suite of R packages, including several from the tidyverse collection were utilized. The `dplyr` package was used the transformation and summarization of traffic data. For importing and processing string data, `readr` and `stringr` were utilized. The handling of date and time variables was done using `lubridate` and data visualization was achieved with `ggplot2`, allowing us to explore and reveal traffic patterns visually. Additionally, `tidyr` assisted in reshaping the data to ensure it was structured appropriately for analysis. File path management was handled using the `here` package, which was essential for ensuring reproducibility across different computing environments. 
+
+
+The dataset was refined to aggregate daily totals for each mode of transportation, with the data aligned and merged based on date, location, and traffic mode specifics. 
+
+
 
 ## Variables of Interest
 
@@ -62,7 +69,6 @@ In addition to a temporal trend variables, specific variables were chosen for th
 -   Daily Bus Traffic (`daily_bus`), Pedestrian Traffic (`daily_peds`) and Bicycle Traffic (`daily_bike`): Bus, pedestrian and bike traffic volumes used to indicate the presence and frequency of non personal car usage.
 -   Time Trend (time_trend): A constructed variable to analyze traffic pattern changes over time.
 
-Using @citeR, the dataset was processed by using tools like `ggplot2` for visualization, `dplyr` for data manipulation, and `lubridate` for date management. These packages made it easier to clean, aggregate, and analyze traffic volumes, which helped to provide a more complex picture of traffic patterns and flow.
 
 ```{r summary-stats-table, echo=FALSE, message=FALSE, warning=FALSE}
 # Load the cleaned data
@@ -189,7 +195,7 @@ time_trend_graph_car
 
 The scatter plot illustrates the fluctuating daily car counts over time, with a trend line suggesting an initial increase in traffic followed by a decline.
 
-# Model
+# Model {#sec-model}
 
 This study uses negative binomial regression to address the problem of over-dispersion, which occurs when observed variance is greater than the mean and is frequently seen in count data. The dependent variable in the model is the daily count of cars, which is assumed to be impacted by temporal variations and the counts of alternative transportation modes (such as buses, bicycles, and pedestrians).
 
@@ -213,7 +219,7 @@ The analysis is divided into two temporal models in order to evaluate the effect
 
 Together with a temporal trend, the `model_before` captures the baseline relationship between automobile traffic and other modes of transportation. As an illustration of possible changes in traffic patterns brought about by the improved streetcar service, the `model_after`, on the other hand, depicts the altered dynamics following the enhancement. By use of comparative analysis, these models demonstrate the effectiveness of the Route 508 enhancements in mitigating car congestion.
 
-# Results
+# Results {#sec-results}
 
 ```{r residuals-before-model, fig.cap="Residuals of the negative binomial regression model before and after the transit improvement. This plot helps to visualize if there are any patterns or systematic deviations unexplained by the model.", echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 # Read and prepare data
@@ -322,18 +328,17 @@ Variables for pedestrian and bicycle traffic remained non-significant, suggestin
 
 The model results indicate a significant reduction in the relationship between bus traffic and car congestion following the transit improvements, as shown by the decrease in the coefficient of daily bus traffic from 0.261 to 0.096. This suggests that improvements in the public transit system might be effectively alleviating car congestion. Additionally, the significant negative time trend in the post-improvement model underscores a successful overall reduction in car traffic between 2012 to 2020.
 
-# Discussion
+# Discussion {#sec-discussion}
 
-## Reducing urban congestion and advancing sustainability through public transit 
+## Reducing urban congestion and advancing sustainability through public transit
 
-This study’s analysis, centered on the Route 508 Lake Shore streetcar enhancements in Toronto, demonstrates a statistically significant divergence of bus traffic from car congestion trends, suggesting that improvements to public transit infrastructure can effectively reduce car congestion in urban areas. Specifically a decrease in the coefficient for `daily_bus` from 0.261 to 0.096 post-improvement, indicates a notable shift in travel behaviour. 
+This study’s analysis, centered on the Route 508 Lake Shore streetcar enhancements in Toronto, demonstrates a statistically significant divergence of bus traffic from car congestion trends, suggesting that improvements to public transit infrastructure can effectively reduce car congestion in urban areas. Specifically a decrease in the coefficient for `daily_bus` from 0.261 to 0.096 post-improvement, indicates a notable shift in travel behaviour.
 
-These local findings align with research conducted by Verbavatz and Barthelemy `source` in which they found that urban area size and public transport density are pivotal in managing car traffic in cities, rather than urban density alone. The article further states that enhancing the density and accessibility of public transport is a viable path to mitigating traffic and its associated environmental impacts. 
+These local findings align with research conducted by Verbavatz and Barthelemy `source` in which they found that urban area size and public transport density are pivotal in managing car traffic in cities, rather than urban density alone. The article further states that enhancing the density and accessibility of public transport is a viable path to mitigating traffic and its associated environmental impacts.
 
-Moreover, the benefits of improved public transit does not stop at decreased car congestion. Insights from the American Public Transportation Association, which illustrate that public transit investments yield substantial congestion relief and economic benefits. Specifically, every dollar spent on public transportation generates 5 dollars in economic return and an associated creation of approximately 50,000 jobs for every billion dollars invested `source`. While on the individual level, households in America can save more than \$13,000 per year by using public transit and owning one less car. 
+Moreover, the benefits of improved public transit does not stop at decreased car congestion. Insights from the American Public Transportation Association, which illustrate that public transit investments yield substantial congestion relief and economic benefits. Specifically, every dollar spent on public transportation generates 5 dollars in economic return and an associated creation of approximately 50,000 jobs for every billion dollars invested `source`. While on the individual level, households in America can save more than \$13,000 per year by using public transit and owning one less car.
 
 These advantages of public transportation investments are in alignment with the principles of sustainable development as defined by the UN's World Commission on Environment and Development: to meet current needs without compromising the ability of future generations to meet their own needs `source`. Together, these strands of evidence support the case for enhancing public transit as a strategic approach to improving urban traffic conditions and achieving broader sustainability goals.
-
 
 ## Good public transit provides access to essential services and promotes social equity
 
@@ -343,17 +348,15 @@ Supporting this claim, Lexer Quamie's research (2011) `source` highlights the in
 
 Moreover, the significance of social equity in public transit is underscored by the stigma associated with bus ridership, particularly among racial minorities and economically marginalized groups. This stigma can lead to policies that inadvertently reinforce social inequities. Actively combating such biases, transit policymakers can ensure that public transit remains an inclusive service that aligns with the broader goals of sustainable development.
 
-
 ## Weaknesses and next steps
 
 ### Weaknesses
 
-While this research provides valuable insights, it acknowledges several limitations that could be addressed in future studies.  The absence of detailed demographic and socioeconomic data limits the ability to deeply understand the differential impacts of public transit improvements across various population segments. Moreover, external factors like varying weather conditions and significant social shifts such as attitudes towards public transit, have not been considered. These elements have the potential to influence public transit usage patterns and public perception significantly. One of the study's primary limitations is its narrow analytical lens, concentrated on traffic volume data, which potentially overlooks the other factors that might influence traffic patterns. For instance, changes in the local economy or shifts in population density.
+While this research provides valuable insights, it acknowledges several limitations that could be addressed in future studies. The absence of detailed demographic and socioeconomic data limits the ability to deeply understand the differential impacts of public transit improvements across various population segments. Moreover, external factors like varying weather conditions and significant social shifts such as attitudes towards public transit, have not been considered. These elements have the potential to influence public transit usage patterns and public perception significantly. One of the study's primary limitations is its narrow analytical lens, concentrated on traffic volume data, which potentially overlooks the other factors that might influence traffic patterns. For instance, changes in the local economy or shifts in population density.
 
 ### Next Steps
 
 Future research directions should broaden the analytical framework to incorporate a comparative analysis of diverse urban settings, including multiple transit modes to identify best practices and the varying impacts these have across different population segments. Additionally, it would be beneficial to integrate granular demographic data, enabling a deeper exploration of how public transit enhancements affect population groups defined by age, income, race, and other socioeconomic factors.
-
 
 \newpage
 

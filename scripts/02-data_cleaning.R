@@ -102,3 +102,4 @@ daily_traffic <- daily_traffic %>%
 write.csv(daily_traffic, here("data", "analysis_data", "cleaned-data.csv"), row.names = FALSE)
 
   
+colnames(raw_data_2010_2019)
