@@ -1,12 +1,12 @@
 ---
 title: "The Route 508 Streetcar and Congestion on Toronto's Shoreline, 2011 - 2020"
-subtitle: "Examining Traffic Patterns Before and After Public Transit Improvements"
+subtitle: "Examining Traffic Patterns Before and After Public Transit Access was Reinstated"
 author: 
   - Maria Mangru
 thanks: "Code and data are available at: https://github.com/MariaMangru/Traffic-Congestion-on-Toronto-s-Shoreline."
 date: today
 date-format: long
-abstract: "This study investigates the impact of enhanced public transit infrastructure on car congestion. It specifically focuses on the reintroduction of the Route 508 Lake Shore streetcar between 2011 and 2020. The data, sourced from the City of Toronto's Transportation Services Division, includes detailed traffic volumes for various modes at intersections across the city. The method of analysis includes comparing the negative binomial regression models of daily car traffic before and after transit upgrades. The results highlighted a significant reduction in the relationship between bus traffic and car congestion. Additionally, it was observed that car traffic decreased over time. These findings highlight the usefulness of public transit improvements in reducing urban congestion."
+abstract: "This study investigates the impact of access to the Route 508 Lake Shore streetcar in Toronto on reducing urban car congestion from 2011 to 2020. By analyzing traffic volume data from the City of Toronto's Transportation Services Division and employing negative binomial regression models, we observed a notable shift in travel behavior, highlighted by a significant decrease in the correlation between bus traffic and car congestion. Specifically, the coefficient for daily bus traffic reduced from 0.261 to 0.096 after access was reinstated, indicating a reduction in car traffic as more public transit options became available. This highlights the effectiveness of enhancing public transit infrastructure not only in easing car congestion but also in contributing to broader environmental and economic benefits. By improving public transit, cities can potentially achieve sustainable development goals by providing equitable access to essential services and reducing environmental impacts, thereby improving quality of life for all urban residents."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -324,42 +324,36 @@ The model results indicate a significant reduction in the relationship between b
 
 # Discussion
 
-## First discussion point {#sec-first-point}
+## Reducing urban congestion and advancing sustainability through public transit 
 
-The introduction of improvements in Toronto's Route 508 Lake Shore streetcar has demonstrated a tangible reduction in the correlation between bus traffic and car congestion. This aligns with global evidence from cities like Amsterdam, where extensive public transit systems have significantly minimized car usage, fostering more sustainable urban environments [Source here]. Such systems not only alleviate congestion but also reduce environmental impact by lowering emissions and promoting cleaner air. This study confirms the view that public transit enhancements are critical for achieving urban sustainability goals.
+This study’s analysis, centered on the Route 508 Lake Shore streetcar enhancements in Toronto, demonstrates a statistically significant divergence of bus traffic from car congestion trends, suggesting that improvements to public transit infrastructure can effectively reduce car congestion in urban areas. Specifically a decrease in the coefficient for `daily_bus` from 0.261 to 0.096 post-improvement, indicates a notable shift in travel behaviour. 
 
--   Study's results highlight that improved public transit correlates with decreased car congestion.
--   Talk about public transit and urban sustainability.
--   Provide examples from other countries e.g., Netherlands (maybe focus on Amsterdam).
-    -   Adding any additional countries could be helpful.
+These local findings align with research conducted by Verbavatz and Barthelemy `source` in which they found that urban area size and public transport density are pivotal in managing car traffic in cities, rather than urban density alone. The article further states that enhancing the density and accessibility of public transport is a viable path to mitigating traffic and its associated environmental impacts. 
 
-## Second discussion point
+Moreover, the benefits of improved public transit does not stop at decreased car congestion. Insights from the American Public Transportation Association, which illustrate that public transit investments yield substantial congestion relief and economic benefits. Specifically, every dollar spent on public transportation generates 5 dollars in economic return and an associated creation of approximately 50,000 jobs for every billion dollars invested `source`. While on the individual level, households in America can save more than \$13,000 per year by using public transit and owning one less car. 
 
-[Source] Upgraded public transit systems can spur economic growth by enhancing accessibility to employment and reducing travel-related expenses. In cities with robust public transit, property values tend to rise, and commercial areas see increased activity, illustrating the broader economic benefits of accessible public transportation. [Source] This study's findings underscore the potential of public transit to drive urban development by reshaping cityscapes into more pedestrian- and transit-friendly environments, thereby attracting more investment and improving the overall quality of urban life.
+These advantages of public transportation investments are in alignment with the principles of sustainable development as defined by the UN's World Commission on Environment and Development: to meet current needs without compromising the ability of future generations to meet their own needs `source`. Together, these strands of evidence support the case for enhancing public transit as a strategic approach to improving urban traffic conditions and achieving broader sustainability goals.
 
--   Effects of improved public transit such as economic.
--   How does public transit influence development in urban areas.
 
-## Third discussion point
+## Good public transit provides access to essential services and promotes social equity
 
-Furthermore, improving public transit infrastructure serves as a powerful tool for enhancing social equity by providing reliable and affordable transportation options to diverse populations, including the disabled, elderly, and low-income individuals. [Source] highlights the critical role of public transit in ensuring that mobility and access to urban opportunities are not luxuries but basic services accessible to all. By enabling equal participation in urban life, enhanced public transit systems can break down barriers and foster more inclusive communities.
+Public transit systems supports not only the movement of people from place to place but also acts a vital channel for economic empowerment and social integration. Access to jobs, education, healthcare, and cultural institutions are fundamental rights, and equitable public transit policies are crucial to ensuring that these services are available to all individuals, regardless of their socioeconomic status.
 
--   Public transit can enhance accessibility for disabled communities, minors, elderly, students.
--   Public transit as an equalizer for class. i.e., people with less wealth may not be able to afford a car so improved public transit gives them access to more spaces for a lower individual cost.
+Supporting this claim, Lexer Quamie's research (2011) `source` highlights the integral role of transportation policy in civil rights, particularly in periods of pronounced unemployment and income disparity. Quamie emphasizes that transportation decisions significantly affect who can access employment opportunities and essential services, positioning public transit as a pivotal tool in the fight for civil rights. By facilitating or hindering access to critical resources, transportation policies not only impact economic outcomes but also health and environmental conditions. This is evident as inadequate or unaffordable public transit disproportionately affects low-income populations, limiting their ability to reach jobs, healthcare, and thereby affecting their overall economic and health status. Additionally, prioritization of car travel over public transit can lead to increased emissions, affecting urban air quality and contributing to environmental degradation.
+
+Moreover, the significance of social equity in public transit is underscored by the stigma associated with bus ridership, particularly among racial minorities and economically marginalized groups. This stigma can lead to policies that inadvertently reinforce social inequities. Actively combating such biases, transit policymakers can ensure that public transit remains an inclusive service that aligns with the broader goals of sustainable development.
+
 
 ## Weaknesses and next steps
 
-While this research provides valuable insights, it acknowledges several limitations that could be addressed in future studies. The absence of detailed demographic and socioeconomic data limits the ability to deeply understand the differential impacts of public transit improvements across various population segments. Furthermore, external factors such as weather conditions and broader social changes, including those prompted by global crises like the COVID-19 pandemic, were not considered but could significantly affect public transit usage and perceptions.
+### Weaknesses
 
-The study's primary weakness lies in its narrow focus on traffic volume data without incorporating broader contextual factors that might influence these volumes. 
+While this research provides valuable insights, it acknowledges several limitations that could be addressed in future studies.  The absence of detailed demographic and socioeconomic data limits the ability to deeply understand the differential impacts of public transit improvements across various population segments. Moreover, external factors like varying weather conditions and significant social shifts such as attitudes towards public transit, have not been considered. These elements have the potential to influence public transit usage patterns and public perception significantly. One of the study's primary limitations is its narrow analytical lens, concentrated on traffic volume data, which potentially overlooks the other factors that might influence traffic patterns. For instance, changes in the local economy or shifts in population density.
 
-Future research should expand the scope to include a comparative analysis of multiple cities with varying transit modes to identify best practices and related influences. It would also be beneficial to integrate demographic data to explore how different groups are uniquely affected by public transit changes. 
+### Next Steps
 
--   Could improve if there is access to population data (maybe weather patterns).
+Future research directions should broaden the analytical framework to incorporate a comparative analysis of diverse urban settings, including multiple transit modes to identify best practices and the varying impacts these have across different population segments. Additionally, it would be beneficial to integrate granular demographic data, enabling a deeper exploration of how public transit enhancements affect population groups defined by age, income, race, and other socioeconomic factors.
 
--   Could benefit from a comparison with different cities and modes of transit.
-
--   Consider COVID, dangers associated with public transit and how that can affect this research which can affect attitude to public transit.
 
 \newpage
 
