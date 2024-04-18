@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository is tailored for a project exploring the relationship between public transit improvements and traffic volumes at key intersections in Toronto from 2011 to 2020. The goal is to provide insights into whether enhancements in public transit can reduce traffic congestion in metropolitan areas.
+This repository is tailored for a project exploring the relationship between public transit access and traffic volumes at key intersections in Toronto from 2011 to 2020. The goal is to provide insights into whether access to public transit can reduce traffic congestion in metropolitan areas.
 
 
 ## File Structure
