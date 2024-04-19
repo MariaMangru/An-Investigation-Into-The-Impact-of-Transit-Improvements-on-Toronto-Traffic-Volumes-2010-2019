@@ -1,7 +1,7 @@
 #### Preamble ####
 # Purpose: Cleans the raw traffic counts recorded into a more manageable dataset 
 # Author: Maria Mangru
-# Date: March 2024
+# Date: 18th April, 2024
 # Contact:maria.mangru@mail.utoronto.ca
 # License: MIT
 
@@ -103,4 +103,5 @@ daily_traffic <- daily_traffic %>%
 write.csv(daily_traffic, here("data", "analysis_data", "cleaned-data.csv"), row.names = FALSE)
 
 # Saving as Parquet
-write_parquet(daily_traffic, here("data", "analysis_data", "cleaned-data.parquet"))
+write_parquet(x = daily_traffic, sink = here("data", "analysis_data", "daily_traffic.parquet"))
+

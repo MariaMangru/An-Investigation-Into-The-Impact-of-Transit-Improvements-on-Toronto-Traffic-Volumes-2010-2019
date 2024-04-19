@@ -1,12 +1,11 @@
 ---
-title: "Datasheet for 'A dataset'"
-subtitle: "My subtitle if needed"
+title: "Datasheet for 'Impact of Public Transit Infrastructure Access on Toronto's Urban Traffic Congestion'"
+subtitle: "Analyzing the effects of the 508 Lake Shore Streetcar improvements"
 author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: LINK."
+  - Maria Mangru
+thanks: "Code and data are available at: https://github.com/MariaMangru/Traffic-Congestion-on-Toronto-s-Shoreline."
 date: today
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "This datasheet accompanies a dataset derived from the City of Toronto's Transportation Services Division, aimed at analyzing the influence of public transit access on urban traffic patterns. It encompasses data from 2010 to 2020, focusing on the periods before and after the reinstating of the 508 Lake Shore streetcar route. The analysis seeks to understand how improved public transit options can reduce urban congestion and contribute to city planning initiatives."
 format: pdf
 number-sections: true
 bibliography: references.bib

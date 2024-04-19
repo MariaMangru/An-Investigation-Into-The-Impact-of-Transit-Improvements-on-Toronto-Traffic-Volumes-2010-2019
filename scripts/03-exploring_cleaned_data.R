@@ -51,7 +51,7 @@ line_graph_car <- analysis_data %>%
 line_graph_car
 
 # Save car traffic plot
-ggsave("./other/outputs/car_traffic_over_time.png", plot = line_graph_car, width = 12, height = 6, units = "in")
+ggsave("./other/outputs/car_traffic_over_time.png", plot = line_graph_car, width = 12, height = 6, units = "in", create.dir = TRUE)
 
 # Visualizing daily bus traffic over time
 line_graph_buses <- analysis_data %>%
@@ -66,7 +66,7 @@ line_graph_buses <- analysis_data %>%
 line_graph_buses
 
 # Save bus traffic plot
-ggsave("./other/outputs/bus_traffic_over_time.png", plot = line_graph_buses, width = 12, height = 6, units = "in")
+ggsave("./other/outputs/bus_traffic_over_time.png", plot = line_graph_buses, width = 12, height = 6, units = "in", create.dir = TRUE)
 
 # Visualizing daily pedestrian traffic over time
 line_graph_pedestrians <- analysis_data %>%
@@ -81,7 +81,7 @@ line_graph_pedestrians <- analysis_data %>%
 line_graph_pedestrians
 
 # Save pedestrian traffic plot
-ggsave("./other/outputs/pedestrian_traffic_over_time.png", plot = line_graph_pedestrians, width = 12, height = 6, units = "in")
+ggsave("./other/outputs/pedestrian_traffic_over_time.png", plot = line_graph_pedestrians, width = 12, height = 6, units = "in", create.dir = TRUE)
 
 # Visualizing daily bike traffic over time
 line_graph_cyclists <- analysis_data %>%
@@ -96,7 +96,7 @@ line_graph_cyclists <- analysis_data %>%
 line_graph_cyclists
 
 # Save cyclist traffic plot
-ggsave("./other/outputs/cyclist_traffic_over_time.png", plot = line_graph_cyclists, width = 12, height = 6, units = "in")
+ggsave("./other/outputs/cyclist_traffic_over_time.png", plot = line_graph_cyclists, width = 12, height = 6, units = "in", create.dir = TRUE)
 
 
 
@@ -116,7 +116,8 @@ time_trend_graph_car <- analysis_data %>%
 time_trend_graph_car
 
 # Save the car traffic plot with time trend
-ggsave(here("other", "outputs", "car_traffic_time_trend.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")
+ggsave("./other/outputs/car_traffic_over_time.png", plot = line_graph_car, width = 12, height = 6, units = "in", create.dir = TRUE)
+
 
 
 

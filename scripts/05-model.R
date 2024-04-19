@@ -1,7 +1,7 @@
 #### Preamble ####
 # Purpose: Creates negative binomial model 
 # Author: Maria Mangru
-# Date: March 2024
+# Date: 18th April, 2024
 # Contact:maria.mangru@mail.utoronto.ca
 # License: MIT
 
@@ -53,7 +53,7 @@ summary(model_after)
 
 
 
-# Graphical representation of the model results for the 'before' improvement model
+# Graphical representation of the model results for the 'before' and `after` improvement model
 
 # For model_before
 before_fitted <- data.frame(observed = before_improvement$daily_cars, fitted = fitted(model_before))
@@ -76,10 +76,6 @@ ggplot(after_fitted, aes(x = fitted, y = observed)) +
        y = "Observed Values") +
   theme_minimal()
 after_fitted
-
-# Save the plot
-ggsave(here("other", "outputs", "before_plot.png"), plot = time_trend_graph_car, width = 12, height = 6, units = "in")
-
 
 
 #### Save model ####

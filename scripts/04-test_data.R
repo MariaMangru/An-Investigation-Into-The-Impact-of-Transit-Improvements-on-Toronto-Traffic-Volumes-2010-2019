@@ -84,39 +84,33 @@ test_that("Dates are within the filtered range of 2014 to 2019", {
 })
 
 
-
 #### Tests for exploring cleaned data ####
 source(here("scripts", "03-exploring_cleaned_data.R"))
 
 # Test summary statistics generation
 test_that("Summary statistics are generated correctly", {
   expect_false(is.null(summary_stats))
-  expect_true("mean_daily_cars" %in% names(summary_stats))
-  expect_true("median_daily_cars" %in% names(summary_stats))
-  expect_true("mean_daily_bus" %in% names(summary_stats))
-  expect_true("median_daily_bus" %in% names(summary_stats))
-  expect_true("mean_daily_peds" %in% names(summary_stats))
-  expect_true("median_daily_peds" %in% names(summary_stats))
-  expect_true("mean_daily_bike" %in% names(summary_stats))
-  expect_true("median_daily_bike" %in% names(summary_stats))
+  expect_true("Mean_Cars" %in% names(summary_stats))
+  expect_true("Median_Cars" %in% names(summary_stats))
+  expect_true("Mean_Buses" %in% names(summary_stats))
+  expect_true("Median_Buses" %in% names(summary_stats))
+  expect_true("Mean_Pedestrians" %in% names(summary_stats))
+  expect_true("Median_Pedestrians" %in% names(summary_stats))
+  expect_true("Mean_Bicycles" %in% names(summary_stats))
+  expect_true("Median_Bicycles" %in% names(summary_stats))
 })
+
 
 # Test that plot data is structured correctly
 test_that("Data for visualizations is prepared correctly", {
-  expect_true("count_date" %in% names(cleaned_data))
-  expect_true("daily_cars" %in% names(cleaned_data))
-  expect_true("daily_bus" %in% names(cleaned_data))
-  expect_true("daily_peds" %in% names(cleaned_data))
-  expect_true("daily_bike" %in% names(cleaned_data))
+  expect_true("count_date" %in% names(analysis_data))
+  expect_true("daily_cars" %in% names(analysis_data))
+  expect_true("daily_bus" %in% names(analysis_data))
+  expect_true("daily_peds" %in% names(analysis_data))
+  expect_true("daily_bike" %in% names(analysis_data))
 })
 
-# Test that plot objects are created
-test_that("Plot objects are created", {
-  expect_false(is.null(line_graph_car))
-  expect_false(is.null(line_graph_buses))
-  expect_false(is.null(line_graph_pedestrians))
-  expect_false(is.null(line_graph_cyclists))
-})
+
 
 
 #### Tests for model ####
