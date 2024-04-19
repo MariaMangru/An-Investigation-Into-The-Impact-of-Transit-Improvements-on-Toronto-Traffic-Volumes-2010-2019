@@ -12,6 +12,7 @@ library(readr)
 library(stringr)
 library(lubridate)
 library(here)
+library(arrow)  
 
 #### Clean data ####
 
@@ -101,5 +102,5 @@ daily_traffic <- daily_traffic %>%
 #### Save data ####
 write.csv(daily_traffic, here("data", "analysis_data", "cleaned-data.csv"), row.names = FALSE)
 
-  
-colnames(raw_data_2010_2019)
+# Saving as Parquet
+write_parquet(daily_traffic, here("data", "analysis_data", "cleaned-data.parquet"))
